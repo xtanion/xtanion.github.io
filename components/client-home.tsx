@@ -113,7 +113,7 @@ export default function ClientHome({ posts, projects }: ClientHomeProps) {
 
               <div className="space-y-6 max-w-md">
                 <p className="text-xl text-muted-foreground leading-relaxed">
-                  I work on <span className="text-foreground">backend systems</span>, <span className="text-foreground">AI stuff</span>, and <span className="text-foreground">distributed architectures</span>. In my free time, I'm either breaking things on my home server or building weird projects.
+                  I work on <span className="text-foreground">backend systems</span>, <span className="text-foreground">generative AI</span>, and <span className="text-foreground">distributed architectures</span>. In my free time, I like to tinker with my home server or learning Rust.
                 </p>
 
                 <div className="flex items-center gap-4 text-sm text-muted-foreground">
@@ -131,8 +131,8 @@ export default function ClientHome({ posts, projects }: ClientHomeProps) {
                 <div className="text-sm text-muted-foreground font-mono">CURRENTLY</div>
                 <div className="space-y-2">
                   <div className="text-foreground">Software Development Engineer</div>
-                  <div className="text-muted-foreground">@ Edra Labs - BrowserStack Venture</div>
-                  <div className="text-xs text-muted-foreground">May 2024 — Present</div>
+                  <div className="text-muted-foreground">@ Kodo (YC'21)</div>
+                  <div className="text-xs text-muted-foreground">Jan 2026 — Present</div>
                 </div>
               </div>
 
@@ -162,6 +162,13 @@ export default function ClientHome({ posts, projects }: ClientHomeProps) {
 
             <div className="space-y-12">
               {[
+                {
+                  year: "2026",
+                  role: "Generative AI Engineer",
+                  company: "Kodo",
+                  description: "Working on Reporting Agent, Data Pipelines and Tresury.",
+                  tech: ["Python", "Langsmith", "Langchain", "Debezium", "Redis", "RabbitMQ"],
+                },
                 {
                   year: "2024",
                   role: "Software Development Engineer",
