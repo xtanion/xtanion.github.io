@@ -8,7 +8,7 @@ import { ThemeToggle } from "../../../components/theme-toggle"
 import { TableOfContents } from "../../../components/table-of-contents"
 
 type PageProps = {
-  params: { slug: string }
+  params: Promise<{ slug: string }>
 }
 
 export function generateStaticParams() {
@@ -39,8 +39,9 @@ function extractHeadings(content: string) {
   return headings
 }
 
-export function generateMetadata({ params }: PageProps): Metadata {
-  const project = getProjectBySlug(params.slug)
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { slug } = await params
+  const project = getProjectBySlug(slug)
   if (!project) return {}
   return {
     title: `${project.title} — Shivam Anand`,
@@ -48,8 +49,9 @@ export function generateMetadata({ params }: PageProps): Metadata {
   }
 }
 
-export default function ProjectPage({ params }: PageProps) {
-  const project = getProjectBySlug(params.slug)
+export default async function ProjectPage({ params }: PageProps) {
+  const { slug } = await params
+  const project = getProjectBySlug(slug)
   if (!project) return notFound()
 
   const headings = extractHeadings(project.content)

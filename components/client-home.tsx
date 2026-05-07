@@ -97,7 +97,7 @@ export default function ClientHome({ posts, projects }: ClientHomeProps) {
       <main className="max-w-4xl mx-auto px-8 lg:px-16">
         <header
           id="intro"
-          ref={(el) => (sectionsRef.current[0] = el)}
+          ref={(el) => { sectionsRef.current[0] = el }}
           className="min-h-screen flex items-center opacity-0"
         >
           <div className="grid lg:grid-cols-5 gap-16 w-full">
@@ -153,7 +153,7 @@ export default function ClientHome({ posts, projects }: ClientHomeProps) {
           </div>
         </header>
 
-        <section id="work" ref={(el) => (sectionsRef.current[1] = el)} className="min-h-screen py-32 opacity-0">
+        <section id="work" ref={(el) => { sectionsRef.current[1] = el }} className="min-h-screen py-32 opacity-0">
           <div className="space-y-16">
             <div className="flex items-end justify-between">
               <h2 className="text-4xl font-light">Work</h2>
@@ -225,7 +225,7 @@ export default function ClientHome({ posts, projects }: ClientHomeProps) {
           </div>
         </section>
 
-        <section id="projects" ref={(el) => (sectionsRef.current[2] = el)} className="min-h-screen py-32 opacity-0">
+        <section id="projects" ref={(el) => { sectionsRef.current[2] = el }} className="min-h-screen py-32 opacity-0">
           <div className="space-y-16">
             <h2 className="text-4xl font-light">Some Projects</h2>
 
@@ -268,7 +268,7 @@ export default function ClientHome({ posts, projects }: ClientHomeProps) {
           </div>
         </section>
 
-        <section id="thoughts" ref={(el) => (sectionsRef.current[3] = el)} className="min-h-screen py-32 opacity-0">
+        <section id="thoughts" ref={(el) => { sectionsRef.current[3] = el }} className="min-h-screen py-32 opacity-0">
           <div className="space-y-16">
             <h2 className="text-4xl font-light">Recent Thoughts</h2>
 
@@ -314,7 +314,7 @@ export default function ClientHome({ posts, projects }: ClientHomeProps) {
           </div>
         </section>
 
-        <section id="connect" ref={(el) => (sectionsRef.current[4] = el)} className="py-32 opacity-0">
+        <section id="connect" ref={(el) => { sectionsRef.current[4] = el }} className="py-32 opacity-0">
           <div className="grid lg:grid-cols-2 gap-16">
             <div className="space-y-8">
               <h2 className="text-4xl font-light">Let's Connect</h2>

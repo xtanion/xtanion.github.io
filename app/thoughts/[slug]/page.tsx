@@ -8,7 +8,7 @@ import { ThemeToggle } from "../../../components/theme-toggle"
 import { TableOfContents } from "../../../components/table-of-contents"
 
 type PageProps = {
-  params: { slug: string }
+  params: Promise<{ slug: string }>
 }
 
 export function generateStaticParams() {
@@ -39,8 +39,9 @@ function extractHeadings(content: string) {
   return headings
 }
 
-export function generateMetadata({ params }: PageProps): Metadata {
-  const post = getPostBySlug(params.slug)
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { slug } = await params
+  const post = getPostBySlug(slug)
   if (!post) return {}
   return {
     title: `${post.title} — Jordan Chen`,
@@ -48,8 +49,9 @@ export function generateMetadata({ params }: PageProps): Metadata {
   }
 }
 
-export default function ThoughtPage({ params }: PageProps) {
-  const post = getPostBySlug(params.slug)
+export default async function ThoughtPage({ params }: PageProps) {
+  const { slug } = await params
+  const post = getPostBySlug(slug)
   if (!post) return notFound()
 
   const headings = extractHeadings(post.content)
