@@ -1,0 +1,291 @@
+1:"$Sreact.fragment"
+2:I[15043,["/_next/static/chunks/01xlw8hd842-c.js","/_next/static/chunks/0d3shmwh5_nmn.js","/_next/static/chunks/0158avlii_e8n.js"],"default"]
+9:I[97367,["/_next/static/chunks/01xlw8hd842-c.js","/_next/static/chunks/0d3shmwh5_nmn.js"],"OutletBoundary"]
+a:"$Sreact.suspense"
+3:Td95,
+Over the last few months, I’ve been gradually building a **home server** that I actually *use* every day. Why? You may ask, basically to be free of the usual internet (and also because Gilfoyle from silicon valley conviced me to build my own Anton).
+
+This blog walks through **why I built it, what I’m running, and how everything fits together**.
+
+
+## Why I Built a Home Server
+
+As a backend engineer, I wanted more than just a VPS:
+
+- Full **control over infrastructure** (while AWS and GCP are good, all the internal workings are kinda abstracted)
+- A place to **experiment safely** ()
+- A deeper understanding of **networking, Linux, Docker, and automation**
+- Most importantly, A Media Server (I was soo tired of having multiple streaming platforms just not having the content I wanna watch!)
+
+
+## Hardware
+
+some shit
+
+This runs 24/7 without noticeable power or noise impact.
+
+---
+
+## Operating System & Base Setup
+
+I’m running a **Debian-based Linux distribution**.
+
+Key choices:
+- No desktop environment
+- SSH-only access
+- Firewall enabled
+- Automatic security updates
+- Custom SSH port + key-based login only
+
+Keeping the OS minimal reduces attack surface and keeps maintenance simple.
+
+---
+
+## Containerization with Docker
+
+Everything runs inside **Docker containers**, managed via Docker Compose.
+
+Why Docker?
+- Clean isolation
+- Easy upgrades
+- Reproducible setup
+- Fast rollback if something breaks
+
+Each service lives in its own compose file with persistent volumes mapped to disk.
+
+---
+
+## Services I’m Running
+
+### 1. Reverse Proxy & SSL
+All services are routed through a reverse proxy:
+- Automatic HTTPS
+- One public IP, many services
+- Clean subdomain-based routing
+
+### 2. Home Automation
+I run a local home automation server to control:
+- Lights
+- Sensors
+- Bluetooth/Zigbee devices
+
+Everything works **locally**, even if the internet goes down.
+
+### 3. Media & File Sharing
+- Private file-sharing service
+- Local media streaming
+- LAN-first, cloud-optional access
+
+### 4. Monitoring & Logs
+- System metrics (CPU, memory, disk)
+- Container health checks
+- Logs centralized for debugging
+
+If something breaks, I know *why*.
+
+---
+
+## Networking & Remote Access
+
+My ISP doesn’t provide a static IP, so I use:
+- Dynamic DNS
+- Reverse tunneling for secure access
+- No exposed services without authentication
+
+Security always comes before convenience.
+
+---
+
+## Backups & Data Safety
+
+One rule: **assume the disk will fail**.
+
+My strategy:
+- Nightly backups to a secondary drive
+- Configuration files version-controlled
+- Encrypted backups for sensitive data
+
+Rebuilding the server from scratch takes under an hour.
+
+---
+
+## What I Learned
+
+This setup taught me more than most cloud tutorials ever could:
+
+- Linux internals
+- Real networking (NAT, DNS, ports)
+- Docker beyond “hello world”
+- Security tradeoffs
+- How systems fail in practice
+
+Most importantly, it gave me **confidence**. I know exactly what’s running, where my data lives, and how to fix things when they break.
+
+---
+
+## What’s Next
+
+Planned upgrades:
+- Local AI / LLM inference
+- Custom voice assistant backend
+- Smarter monitoring & alerting
+- Power usage optimization
+
+This server isn’t “done”—it’s a living system.
+
+---
+
+## Final Thoughts
+
+A home server isn’t about replacing the cloud.  
+It’s about **understanding it**.
+
+If you’re a developer who enjoys building systems end-to-end, I highly recommend setting one up. Start small. Break things. Learn fast.
+4:T43f,
+# Distributed Task Processing
+
+A highly scalable distributed task processing system built on Celery, capable of handling over 10,000 concurrent operations with robust fault tolerance and monitoring.
+
+## Overview
+
+Designed and implemented a production-grade distributed task queue system to handle high-volume background processing for web applications at scale.
+
+## Key Features
+
+- **10k+ Concurrent Operations**: Efficiently processes thousands of tasks simultaneously
+- **Redis Clustering**: High-availability message broker with failover support
+- **PostgreSQL Optimization**: Optimized database queries and connection pooling
+- **Monitoring & Observability**: Comprehensive metrics and alerting
+
+## Technical Architecture
+
+The system leverages:
+- **Celery** for distributed task execution
+- **Redis** as the message broker and result backend
+- **PostgreSQL** for persistent storage with advanced optimization
+- **Python** for worker implementation
+
+## Performance
+
+Achieved 99.9% uptime with average task processing time under 100ms and automatic retry mechanisms for failed tasks.
+5:T86c,
+Here's a journey of how we build a smart web crawler before FireCrawl/etc existed.
+
+## Story Time
+---
+
+(you may skip if you want)
+
+Our task of building a smart web scrapper began when we tried to make a web srapper for web-archive/internet-archive. As you know, web archive is a corpus of massive snapshots of evey websites possible for the past 20 years.
+
+Initial implementation used scrapy (python) package to write custom webscrappers...but this got tedious too soon. We (team of 2) started to look out for better solutions.
+
+### Phase 1
+
+**Enter, the AI based scrapper**. This is where it all began, we realised that we can parse HTML pages as it is, convert the content to markdown and with the help of LLMs it's quite easy to classify each section. Parsing HTML to md wasn't very difficult either. This worked great for the PoC.
+
+But this didn't scaled well, because of the following reasons:
+
+1. Markdown conversion was lossy, critical DOM structure, hierarchy, and semantic context are discarded during conversion.
+2. Boilerplate content overwhelms signal, causing navigation, footers, and legal text to be misclassified as meaningful sections.
+3. Section boundaries become ambiguous, forcing the LLM to guess structural intent from flattened text.
+4. Images, pdfs and js-rendered content is often incomplete or missing, leading to inconsistent or partial extractions.
+5. Token usage scales poorly, as markdown inflates content size and forces aggressive chunking.
+6. Expensive AF!
+
+
+### Phase 2
+
+**RAG Approach** - 
+
+
+## Key Features
+---
+- **98% Retrieval Precision**: Achieved industry-leading accuracy in document retrieval
+- **Automated Content Optimization**: ML-powered content enhancement and SEO optimization
+- **Scalable Architecture**: Handles millions of documents with sub-second query times
+- **Vector Database Integration**: Efficient semantic search using state-of-the-art embeddings
+
+## Technical Stack
+
+Python, LangChain, Redis Queues (Yes, This exists), Qdrant (Open-source Vector DB)
+
+## Impact
+
+Deployed to production serving thousands of daily queries with consistent sub-second response times and 98% user satisfaction rate.
+6:T117b,
+# Making 3D Models Dance in Python
+
+So I spent Summer 2022 teaching a scientific visualization library how to load modern 3D files and make them move. Turns out getting a virtual fox to do backflips involves a lot more math than you'd think.
+
+## What's This All About?
+
+FURY is this cool Python library that scientists use to visualize medical scans and research data. The problem? It couldn't load glTF files (the standard 3D format everyone uses these days) or animate anything. My mission was to fix that.
+
+![Loading glTF models with textures](https://user-images.githubusercontent.com/74976752/174492510-b9f10816-3058-4a7b-a260-0627406354ba.png)
+
+*Finally getting textures to work was oddly satisfying*
+
+## The Journey: From "It Loads!" to "It Moves!"
+
+First challenge: loaded a model, and the textures were upside down. Classic. Turns out glTF thinks (0,0) is at the top-left, but VTK (what FURY uses) wants it at the bottom-left. One coordinate flip later, we were in business.
+
+### Simple Animations (The Easy Part)
+
+So I thought, But it was far from easy. First of all, I had no clue how animations work behind the scene. So I went to the library, picked up the Computer Graphics book and applied a binary search on the content. I had a basic gist of how things work now. Also, huge thanks to [Mohamed](https://github.com/m-agour) for explaining the animation pipeline that he wrote. Got basic translation, rotation, and scaling working pretty quickly. Convert some binary data to NumPy arrays, hook up a timeline, boom! things move.
+
+![Simple animations in action](https://user-images.githubusercontent.com/74976752/217645594-6054ea83-12e5-4868-b6a1-eee5a154bd26.gif)
+
+*I was in love with these Spinning boxes*
+
+### Morphing: When Cubes Get Weird
+
+Morphing is basically vertex animation, you tell each vertex "hey, move over here a bit" and blend between poses. Implementing this meant wrestling with morph targets and weighted blending. But when it finally worked...
+
+![Morphing animation demo](https://user-images.githubusercontent.com/74976752/217645485-153ec403-6c87-4282-8907-30d921106b34.gif)
+
+*The AnimatedMorphCube doing its thing*
+
+At this point, I would show any of these features to my friends, They will say "I'm a mad scientist", and I'm obsessed with cubes.
+
+### Skeletal Animation: The Final Boss
+
+This is where things got spicy. Skeletal animation means deforming a mesh based on bone movements. Sounds simple until you're debugging why the CesiumMan model looks like a pretzel.
+
+The breakthrough came in week 13 when I figured out the hierarchical timeline system. Each bone gets its own timeline, and you have to respect parent-child relationships. The magic formula became:
+
+```
+SkinMatrix = InverseBindPose * BoneDeform
+where BoneDeform = CurrentBoneTransform * ParentBoneTransform
+```
+
+![Skeletal animation working](https://user-images.githubusercontent.com/74976752/217645367-f901c6ed-ca20-40d6-92dd-f1cd8899ac7a.gif)
+
+*When the bones finally cooperate*
+
+The real celebration moment was getting multiple actors to work simultaneously. [Here's the BrainStem model demo](https://user-images.githubusercontent.com/74976752/193109340-2e37c255-139b-499f-a932-b8c0290bb481.mp4) showing multiple parts animating together.
+
+## The Nerdy Details
+
+Built with Python, OpenGL/VTK for rendering, and way too many hours staring at matrix multiplication order. Some fun challenges:
+
+- **The Inverse Bind Matrix Mystery**: Took a while to understand it "undoes" the model's bind pose. Can't just multiply it with weights—learned that the hard way.
+- **Coordinate System Shenanigans**: glTF's top-left origin vs VTK's bottom-left origin
+- **Parent Transforms**: Realizing parent transformations were already baked into the actor construction saved a ton of redundant calculations
+- **Multiple Animations**: Making different parts animate at the same time without breaking everything
+
+## What Got Merged
+
+Shipped 5 major features and 5 smaller patches across 14 weeks:
+- [Basic glTF import](https://github.com/fury-gl/fury/pull/600)
+- [Scene export to glTF](https://github.com/fury-gl/fury/pull/630)
+- [Model fetcher](https://github.com/fury-gl/fury/pull/602)
+- [Simple animations](https://github.com/fury-gl/fury/pull/643)
+- [Skeletal animation](https://github.com/fury-gl/fury/pull/685)
+- [Morphing support](https://github.com/fury-gl/fury/pull/700)
+
+PBR implementation is still pending, but it will be really cool to see some development on the PBR sides.
+0:{"rsc":["$","$1","c",{"children":[["$","$L2",null,{"posts":[{"slug":"some-fancy-lights","title":"Extremely Fancy Lights (feat. WLED and HyperHDR)","excerpt":"Learning about self hosting, contol. access management and a computer networks","date":"May 2025","readTime":"5 min","tags":["Self Hosted","OSS","Linux","Debian","Docker","ESP"],"content":"\ntbd\n"},{"slug":"my-home-server-setup","title":"I Built a Home Server","excerpt":"Learning about self hosting, contol. access management and a computer networks","date":"Jan 2025","readTime":"8 min","tags":["Self Hosted","OSS","Linux","Debian","Docker","ESP"],"content":"$3"}],"projects":[{"slug":"distributed-task-processing","title":"Distributed Task Processing","description":"Scalable Celery-based task queue system handling 10k+ concurrent operations with Redis clustering and PostgreSQL optimization.","year":"2024","status":"Production","tech":["Python","Celery","Redis","PostgreSQL"],"content":"$4"},{"slug":"rag-content-system","title":"A smart web-scrapper?","description":"We built a smart (kinda) webscrapper with 98% recall accuracy on production.","year":"2024","status":"Edra Labs","tech":["Python","Vector DB","LangChain","FastAPI"],"content":"$5"},{"slug":"3d-renderer-enhancement","title":"glTF Integration for FURY","description":"Implemented comprehensive glTF 2.0 support for the FURY scientific visualization library including skeletal animations, morphing, and model import/export capabilities during Google Summer of Code 2022.","year":"2022","status":"Google Summer of Code","tech":["Python","OpenGL","glTF 2.0","VTK","Computer Graphics"],"content":"$6"}]}],["$L7"],"$L8"]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"7v0yTuIVd-_e4EOVzjp2F"}
+7:["$","script","script-0",{"src":"/_next/static/chunks/0158avlii_e8n.js","async":true}]
+8:["$","$L9",null,{"children":["$","$a",null,{"name":"Next.MetadataOutlet","children":"$@b"}]}]
+b:null
