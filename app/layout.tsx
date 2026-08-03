@@ -1,7 +1,7 @@
 import type React from "react"
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
-import { ThemeProvider } from "../components/theme-provider"
+import { ThemeProvider, themeScript } from "../components/theme-provider"
 import "./globals.css"
 
 const inter = Inter({
@@ -55,7 +55,7 @@ export const metadata: Metadata = {
     images: ['/portfolio/banner.png'],
   },
   icons: {
-    icon: '/portfolio/penguin.svg',
+    icon: { url: '/portfolio/cat-chips.gif', type: 'image/gif' },
   },
   alternates: {
     canonical: 'https://xtanion.github.io/portfolio',
@@ -69,10 +69,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${inter.variable}`} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
       <body className="font-sans antialiased min-h-screen bg-background text-foreground">
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
-          {children}
-        </ThemeProvider>
+        <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>
   )

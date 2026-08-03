@@ -12,6 +12,16 @@ interface ClientHomeProps {
   projects: Project[]
 }
 
+const NAV_SECTIONS = [
+  { id: "intro", label: "Hi !" },
+  { id: "work", label: "Exp." },
+  { id: "projects", label: "Proj" },
+  { id: "thoughts", label: "Blog" },
+  { id: "connect", label: "Dial" },
+]
+
+const NAV_ITEM_REM = 2
+
 export default function ClientHome({ posts, projects }: ClientHomeProps) {
   const [activeSection, setActiveSection] = useState("")
   const [isScrolling, setIsScrolling] = useState(false)
@@ -62,30 +72,33 @@ export default function ClientHome({ posts, projects }: ClientHomeProps) {
   }, [])
 
 
+  const activeIndex = NAV_SECTIONS.findIndex((section) => section.id === activeSection)
+
   return (
     <div className="min-h-screen bg-background text-foreground relative">
       <nav className={`fixed left-8 top-1/2 -translate-y-1/2 z-10 hidden lg:block transition-opacity duration-300 ${
         isScrolling ? "opacity-100" : "opacity-0"
       }`}>
-        <div className="flex flex-col gap-4 border-border/20">
-          {[
-            { id: "intro", label: "Hi !" },
-            { id: "work", label: "Exp." },
-            { id: "projects", label: "Proj" },
-            { id: "thoughts", label: "Blog" },
-            { id: "connect", label: "Dial" }
-          ].map((section) => (
+        <div className="relative flex flex-col">
+          <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-border" />
+          <div
+            className={`absolute left-0 w-0.5 bg-grad-green transition-all duration-500 ${
+              activeIndex < 0 ? "opacity-0" : "opacity-100"
+            }`}
+            style={{
+              height: `${NAV_ITEM_REM}rem`,
+              transform: `translateY(${Math.max(activeIndex, 0) * NAV_ITEM_REM}rem)`,
+            }}
+          />
+          {NAV_SECTIONS.map((section) => (
             <button
               key={section.id}
               onClick={() => document.getElementById(section.id)?.scrollIntoView({ behavior: "smooth" })}
-              className="flex items-center gap-3 group"
+              className="group flex h-8 items-center pl-4"
               aria-label={`Navigate to ${section.id}`}
             >
-              <div className={`w-0.5 h-8 transition-all duration-500 ${
-                activeSection === section.id ? "bg-foreground" : "bg-muted-foreground/30 group-hover:bg-muted-foreground/60"
-              }`} />
-              <span className={`text-sm font-mono transition-all duration-500 ${
-                activeSection === section.id ? "text-foreground" : "text-muted-foreground/30 group-hover:text-muted-foreground/60"
+              <span className={`text-sm font-mono transition-colors duration-500 ${
+                activeSection === section.id ? "text-foreground" : "text-muted-foreground/40 group-hover:text-foreground"
               }`}>
                 {section.label}
               </span>
@@ -118,7 +131,7 @@ export default function ClientHome({ posts, projects }: ClientHomeProps) {
 
                 <div className="flex items-center gap-4 text-sm text-muted-foreground">
                   <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                    <div className="w-2 h-2 bg-green rounded-full animate-pulse"></div>
                     Available for work
                   </div>
                   <div>Mumbai, India</div>
@@ -142,7 +155,7 @@ export default function ClientHome({ posts, projects }: ClientHomeProps) {
                   {["Rust", "Python", "C++", "Redis", "RabbitMq", "AWS", "Docker"].map((skill) => (
                     <span
                       key={skill}
-                      className="px-3 py-1 text-xs border border-border rounded-full hover:border-muted-foreground/50 transition-colors duration-300"
+                      className="px-3 py-1 text-xs font-mono rounded-full bg-muted/40 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors duration-300"
                     >
                       {skill}
                     </span>
@@ -193,7 +206,7 @@ export default function ClientHome({ posts, projects }: ClientHomeProps) {
               ].map((job, index) => (
                 <div
                   key={index}
-                  className="group grid lg:grid-cols-12 gap-8 py-8 border-b border-border/50 hover:border-border transition-colors duration-500"
+                  className="group grid lg:grid-cols-12 gap-8 py-8 px-4 -mx-4 border-b border-border/50 hover:border-accent-edge hover:bg-accent-tint transition-colors duration-500"
                 >
                   <div className="lg:col-span-2">
                     <div className="text-2xl font-light text-muted-foreground group-hover:text-foreground transition-colors duration-500">
@@ -213,7 +226,7 @@ export default function ClientHome({ posts, projects }: ClientHomeProps) {
                     {job.tech.map((tech) => (
                       <span
                         key={tech}
-                        className="px-3 py-1 h-max text-xs border border-border rounded-full hover:border-muted-foreground/50 transition-colors duration-300"
+                        className="px-3 py-1 h-max text-xs font-mono rounded-full bg-muted/40 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors duration-300"
                       >
                         {tech}
                       </span>
@@ -237,14 +250,14 @@ export default function ClientHome({ posts, projects }: ClientHomeProps) {
                   className="block group h-full"
                   aria-label={`View ${project.title} details`}
                 >
-                  <div className="group h-full flex flex-col p-8 border border-border rounded-lg hover:border-muted-foreground/50 transition-all duration-500 hover:shadow-lg cursor-pointer">
+                  <div className="group glow-accent h-full flex flex-col p-8 border border-border transition-all duration-500 cursor-pointer">
                     <div className="space-y-4 flex-1">
                       <div className="flex items-center justify-between text-xs text-muted-foreground font-mono">
                         <span>{project.year}</span>
-                        <span className="px-2 py-1 bg-muted/30 rounded-md">{project.status}</span>
+                        <span className="px-2 py-1 rounded-full bg-muted/40">{project.status}</span>
                       </div>
 
-                      <h3 className="text-xl font-medium group-hover:text-muted-foreground transition-colors duration-300">
+                      <h3 className="text-xl font-medium group-hover:text-foreground transition-colors duration-300">
                         {project.title}
                       </h3>
 
@@ -254,7 +267,7 @@ export default function ClientHome({ posts, projects }: ClientHomeProps) {
                         {project.tech.map((tech) => (
                           <span
                             key={tech}
-                            className="px-3 py-1 text-xs border border-border rounded-full hover:border-muted-foreground/50 transition-colors duration-300"
+                            className="px-3 py-1 text-xs font-mono rounded-full bg-muted/40 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors duration-300"
                           >
                             {tech}
                           </span>
@@ -280,7 +293,7 @@ export default function ClientHome({ posts, projects }: ClientHomeProps) {
                   className="block group h-full"
                   aria-label={`Read ${post.title}`}
                 >
-                  <article className="group h-full flex flex-col p-8 border border-border rounded-lg hover:border-muted-foreground/50 transition-all duration-500 hover:shadow-lg cursor-pointer">
+                  <article className="group glow-accent h-full flex flex-col p-8 border border-border transition-all duration-500 cursor-pointer">
                     <div className="space-y-4 flex-1">
                       <div className="flex items-center justify-between text-xs text-muted-foreground font-mono">
                         <span>{post.date}</span>
@@ -289,7 +302,7 @@ export default function ClientHome({ posts, projects }: ClientHomeProps) {
 
                       <h3
                         id={`post-${post.slug}-title`}
-                        className="text-xl font-medium group-hover:text-muted-foreground transition-colors duration-300"
+                        className="text-xl font-medium group-hover:text-foreground transition-colors duration-300"
                       >
                         {post.title}
                       </h3>
@@ -300,7 +313,7 @@ export default function ClientHome({ posts, projects }: ClientHomeProps) {
                         {post.tags.map((tag) => (
                           <span
                             key={tag}
-                            className="px-3 py-1 text-xs border border-border rounded-full hover:border-muted-foreground/50 transition-colors duration-300"
+                            className="px-3 py-1 text-xs font-mono rounded-full bg-muted/40 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors duration-300"
                           >
                             {tag}
                           </span>
@@ -357,12 +370,12 @@ export default function ClientHome({ posts, projects }: ClientHomeProps) {
                     <Link
                       key={social.name}
                       href={social.url}
-                      className="group p-4 border border-border rounded-lg hover:border-muted-foreground/50 transition-all duration-300 hover:shadow-sm"
+                      className="group glow-accent p-4 border border-border transition-all duration-300"
                     >
                       <div className="space-y-2">
                         <div className="flex items-center gap-2">
                           <Icon className="w-5 h-5 text-muted-foreground group-hover:text-foreground transition-colors duration-300" />
-                          <div className="text-foreground group-hover:text-muted-foreground transition-colors duration-300">
+                          <div className="text-foreground">
                             {social.name}
                           </div>
                         </div>

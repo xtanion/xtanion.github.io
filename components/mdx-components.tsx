@@ -23,22 +23,25 @@ export const mdxComponents = {
     <p className="text-muted-foreground leading-relaxed my-4" {...props} />
   ),
   a: (props: React.AnchorHTMLAttributes<HTMLAnchorElement>) => (
-    <a className="underline underline-offset-4 decoration-muted-foreground hover:text-foreground" {...props} />
+    <a
+      className="text-accent-ink underline underline-offset-4 decoration-accent-edge/40 hover:decoration-accent-edge transition-colors duration-300"
+      {...props}
+    />
   ),
   ul: (props: React.HTMLAttributes<HTMLUListElement>) => <ul className="list-disc pl-6 my-4 space-y-2" {...props} />,
   ol: (props: React.HTMLAttributes<HTMLOListElement>) => <ol className="list-decimal pl-6 my-4 space-y-2" {...props} />,
   li: (props: React.LiHTMLAttributes<HTMLLIElement>) => <li className="leading-relaxed" {...props} />,
   blockquote: (props: React.BlockquoteHTMLAttributes<HTMLQuoteElement>) => (
-    <blockquote className="border-l-2 border-border pl-4 my-6 italic text-muted-foreground" {...props} />
+    <blockquote className="border-l-2 border-accent-edge pl-4 my-6 italic text-muted-foreground" {...props} />
   ),
   hr: (props: React.HTMLAttributes<HTMLHRElement>) => <hr className="my-8 border-border" {...props} />,
   pre: (props: React.HTMLAttributes<HTMLPreElement>) => (
     <pre
-      className="bg-secondary/50 text-foreground border border-border rounded-lg p-4 overflow-x-auto my-6"
+      className="bg-secondary/50 text-foreground border border-border p-4 overflow-x-auto my-6"
       {...props}
     />
   ),
   code: (props: React.HTMLAttributes<HTMLElement>) => (
-    <code className="rounded bg-secondary px-1.5 py-0.5 text-sm" {...props} />
+    <code className="bg-secondary px-1.5 py-0.5 text-sm" {...props} />
   ),
 }

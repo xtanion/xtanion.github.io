@@ -68,7 +68,7 @@ export default async function ProjectPage({ params }: PageProps) {
       <header className="space-y-4 mb-8">
         <div className="flex items-center justify-between text-xs text-muted-foreground font-mono">
           <span>{project.year}</span>
-          <span className="px-2 py-1 bg-muted/30 rounded-md">{project.status}</span>
+          <span className="px-2 py-1 rounded-full bg-muted/40">{project.status}</span>
         </div>
         <h1 className="text-4xl lg:text-5xl font-light tracking-tight text-balance">{project.title}</h1>
         <p className="text-muted-foreground leading-relaxed">{project.description}</p>
@@ -76,7 +76,7 @@ export default async function ProjectPage({ params }: PageProps) {
           {project.tech.map((tech) => (
             <span
               key={tech}
-              className="px-3 py-0.5 text-xs border border-border rounded-full hover:border-muted-foreground/50 transition-colors duration-300"
+              className="px-3 py-0.5 text-xs font-mono rounded-full bg-muted/40 text-muted-foreground hover:bg-green/15 hover:text-accent-ink transition-colors duration-300"
             >
               {tech}
             </span>

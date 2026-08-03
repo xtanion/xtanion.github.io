@@ -76,7 +76,7 @@ export default async function ThoughtPage({ params }: PageProps) {
           {post.tags.map((tag) => (
             <span
               key={tag}
-              className="px-3 py-0.5 text-xs border border-border rounded-full hover:border-muted-foreground/50 transition-colors duration-300"
+              className="px-3 py-0.5 text-xs font-mono rounded-full bg-muted/40 text-muted-foreground hover:bg-green/15 hover:text-accent-ink transition-colors duration-300"
             >
               {tag}
             </span>
