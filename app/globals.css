@@ -3,6 +3,36 @@
 @import "@fontsource/commit-mono/400.css";
 @import "@fontsource/commit-mono/600.css";
 
+/* Drafting Mono — typewriter monospace, prose only. SIL OFL, see app/fonts/LICENSE.md */
+@font-face {
+  font-family: 'Drafting Mono';
+  src: url('./fonts/DraftingMono-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Drafting Mono';
+  src: url('./fonts/DraftingMono-Italic.woff2') format('woff2');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Drafting Mono';
+  src: url('./fonts/DraftingMono-SemiBold.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Drafting Mono';
+  src: url('./fonts/DraftingMono-SemiBoldItalic.woff2') format('woff2');
+  font-weight: 600;
+  font-style: italic;
+  font-display: swap;
+}
+
 /* ==========================================================================
    clpr — terminal design system
    Monospace, near-black canvas, one green accent, square corners, hairlines.
@@ -43,6 +73,8 @@
 
   --font: 'Commit Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   --font-mono: var(--font);
+  /* Prose only — chrome stays Commit Mono */
+  --font-prose: 'Drafting Mono', var(--font);
   --max: 780px;
 
   /* Compatibility bridge for any leftover Tailwind color utilities */
@@ -193,6 +225,7 @@ a { color: inherit; text-decoration: none; }
 
 .art-head { margin-bottom: 40px; }
 .art-title {
+  font-family: var(--font-prose);
   font-size: 22px;
   font-weight: 600;
   line-height: 1.3;
@@ -200,6 +233,7 @@ a { color: inherit; text-decoration: none; }
   text-transform: lowercase;
 }
 .art-lead {
+  font-family: var(--font-prose);
   font-size: 15px;
   max-width: 62ch;
   margin-top: 6px;
@@ -245,6 +279,7 @@ a { color: inherit; text-decoration: none; }
    -------------------------------------------------------------------------- */
 
 .md {
+  font-family: var(--font-prose);
   font-size: 15px;
   line-height: 1.65;
   color: var(--text);
@@ -278,7 +313,7 @@ a { color: inherit; text-decoration: none; }
 .md a:hover { color: var(--green); }
 .md strong { color: var(--loud); font-weight: 600; }
 .md ul, .md ol { padding-left: 20px; }
-.md ul { list-style: square; }
+.md ul { list-style: disc; }
 .md ol { list-style: decimal; }
 .md li { margin-top: 4px; }
 .md li::marker { color: var(--muted); }
@@ -291,6 +326,7 @@ a { color: inherit; text-decoration: none; }
   color: var(--loud);
 }
 .md pre {
+  font-family: var(--font);
   background: #121212;
   border: 1px solid var(--line);
   border-radius: 0;
