@@ -46,12 +46,6 @@ export const metadata: Metadata = {
     creator: '@xtanion',
     images: ['/portfolio/banner.png'],
   },
-  icons: {
-    icon: [
-      { url: '/portfolio/dog_128.png', type: 'image/png', sizes: '128x128' },
-    ],
-    apple: '/portfolio/dog_128.png',
-  },
   alternates: {
     canonical: 'https://xtanion.github.io/portfolio',
   },
