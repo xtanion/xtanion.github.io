@@ -286,8 +286,9 @@ a { color: inherit; text-decoration: none; }
   max-width: 66ch;
 }
 .md > * + * { margin-top: 16px; }
-/* Sections read by color: green h2 > loud h3 > body text.
+/* Sections read by color: green h1/h2 > loud h3 > body text.
    Separator rules come only from an authored `---` in the mdx, never from h2. */
+.md h1,
 .md h2 {
   font-size: 16px;
   font-weight: 600;

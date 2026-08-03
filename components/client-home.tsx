@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { useState, type ReactNode } from "react"
+import { useEffect, useState, type ReactNode } from "react"
 import { Github, Linkedin, Mail, MapPin, Twitter, type LucideIcon } from "lucide-react"
 import { Guide } from "./guide"
 import { SiteFooter } from "./site-footer"
@@ -12,6 +12,8 @@ interface ClientHomeProps {
   posts: Post[]
   projects: Project[]
 }
+
+const OPEN_KEY = "tree-open"
 
 type Leaf = {
   key: string
@@ -77,8 +79,22 @@ const CONTACT: Leaf[] = [
 export default function ClientHome({ posts, projects }: ClientHomeProps) {
   const [open, setOpen] = useState<string[]>([])
 
-  const toggle = (id: string) =>
-    setOpen((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]))
+  /* Restore after mount, not during render — the prerendered html is always
+     collapsed, so reading storage any earlier would break hydration. */
+  useEffect(() => {
+    try {
+      const saved = sessionStorage.getItem(OPEN_KEY)
+      if (saved) setOpen(JSON.parse(saved))
+    } catch {}
+  }, [])
+
+  const toggle = (id: string) => {
+    const next = open.includes(id) ? open.filter((x) => x !== id) : [...open, id]
+    setOpen(next)
+    try {
+      sessionStorage.setItem(OPEN_KEY, JSON.stringify(next))
+    } catch {}
+  }
 
   const nodes: Node[] = [
     { id: "whoami", label: "whoami", prose: WHOAMI },

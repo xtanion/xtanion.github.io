@@ -5,5 +5,180 @@ date: "May 2025"
 readTime: "5 min"
 tags: ["Self Hosted", "OSS", "Linux", "Debian", "Docker", "ESP"]
 ---
+# Obsession with Lights!
 
-tbd
+> Have you ever woken up at night thinking about why y desk setup doesn't look as good as one of those pinterest ones.
+>
+> Well, Me neither.
+
+
+But I have always wanted a diffused lights source on my desk. Not something that [*blinds you*](https://www.youtube.com/watch?v=4NRXx6U8ABQ&list=RD4NRXx6U8ABQ&start_radio=1) when you look at it, but a soft light that fills the space without drawing attention to itself. The kind of lighting that makes a setup feel calm and intentional.
+
+I already had three lamps in my 150 sqft room, but something was still missing. The lighting worked, but it did not feel right for long hours at the desk.
+
+At some point, I started looking into monitor light bars. On paper, they seemed like the perfect solution. However, they had two problems.
+1. First, they are not diffused. Since they sit on top of the monitor, the light falls directly onto the desk. It lights up the surface, but it does not improve the overall atmosphere.
+2. Second, the good ones are expensive. Some of them cost almost a third of my monitor. The cheaper options either look out of place or miss important features.
+
+So instead of trying to pick the least bad option, I decided to approach the problem differently.
+
+## Discovery
+
+That is when I came across [*WLED*](https://github.com/wled/WLED).
+
+It is an open source firmware that lets you control LED strips with a lot of flexibility. Brightness, colors, effects, all accessible through a simple web interface.
+
+The setup looked straight forward, and there were enough guides online to make it approachable.
+
+Instead of placing a light source in front of me, I could place it behind the monitor and let the light reflect off the wall.
+
+![big-brain](https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZnp1a2tjYXFpenN3MXUwN3VoODdpZnBtN3k1NDd1eTcxNTV4aGx0ZCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/d3mlE7uhX8KFgEmY/giphy.gif)
+
+## Components
+
+I used an ESP32 and a WS2812B LED strip.
+
+I am pretty sure technical terms don't confuse you but here's what they are - 
+> ESP32 - An esp32 is a cheap ass microcontroller with built in wifi and bluettoth, which makes it great for almost all kinds iot work..,except things that require an OS. You can find one at [Amazon](https://www.amazon.in/s?k=esp32&crid=2PX6N4RW2ENEA&sprefix=esp,aps,389) for 300-400 INR.
+>
+> WS2812B - WS2812B is an individually addressable RGB LED with a control IC built in. It provides 24-bit color (8-bit per channel, and requires atleaset 5v and approx 60mA per LED. Here's the one I used: [Amazon Link](https://amzn.in/d/05pO0qgr)
+
+The strip was mounted along the back of the monitor, facing the wall instead of facing outward. We solved the diffused lighting problem.
+
+## I know the pieces fit!
+
+I own a Dell S2725qc (Dim 61 * 37 cm), Perimeter = 196 cm ~ 2m lights should suffice.
+
+Some quick math
+```py
+total_leds = 120
+max_cur_per_led = 60mA
+# All leds are in series
+max_cur = 120*60 = 7.2A
+max_vol = 5V
+```
+Okay, so 9A is a lot, and most power adapter doesn't can't output 9A at 5v. The PD charger I had has a rating of 5v@3.3A
+The esp can output 5v but not more than 2A. We gotta comporoprise somewhere here - Let's (re)math -
+```py
+# Assuming 115 LEDs now, to save some energy
+# total_leds = 115
+max_cur_per_led = 60mA
+
+max_cur = 115 * 60  # = 6900mA = 6.9A
+max_vol = 5V
+```
+
+Still bad.
+
+Like… optimistically bad, but bad.
+
+Because this assumes every LED is running at full white brightness, which is basically the "sun simulator" mode. Not what we want anyway.
+
+Also, my power situation:
+I wnated to power it directly from my monitor's usb 3.2 port (which prolly has a 20w out)
+
+So instead of trying to brute force power like a maniac, I decided to… not buy an PSU.
+
+Two key observations:
+1. I do not need full brightness
+2. I am not running all LEDs at full white all the time
+
+WLED actually makes this easy. It has a brightness limiter and global brightness control.
+
+So instead of designing for worst case, I designed for actual usage.
+
+Let’s say:
+
+Brightness capped at ~30%
+Mostly warm tones (not full RGB white - Which is the case 99% of the time)
+
+That brings power consumption way down.
+
+A rough approximation:
+```py
+effective_cur = max_cur * 0.3  # ~30% brightness
+# 6.9A * 0.3 ~= 2.07A
+```
+Now we are within range. So we can power the entire thing with  ESP's 5v out port itself. I will attach some wiring images below, refer to that. I have also added a 100microfarad capacitor to reduce flickering.
+
+## Wiring
+
+Nothing fancy here. Three wires.
+
+- **5V** from ESP's 5v pin → red wire on LED strip
+- **GND** from ESP → white wire on LED strip  
+- **GPIO 16** → data wire on LED strip (yellow or green, depends on your strip)
+
+The 100µF capacitor goes across the 5V and GND lines, as close to the strip's input as possible. It smooths out the initial power surge when the strip boots up. Without it, the first few LEDs tend to flash white for a split second. Not a big deal but annoying once you notice it.
+
+One thing I got wrong the first time — I connected the data line without a resistor. WLED's docs recommend a 300-500Ω resistor on the data line to protect against voltage spikes. I added a 330Ω one after the fact. The strip worked fine without it, but it's good practice.
+
+## Flashing WLED
+
+This part is genuinely easy. WLED has a web flasher now — [install.wled.me](https://install.wled.me). Plug the ESP32 in via USB, open the page in Chrome (needs Web Serial API, so Chrome/Edge only), click install, done.
+
+If that doesn't work for some reason — maybe your ESP32 has a CH340 chip and the driver isn't installed — you can flash manually with `esptool`:
+
+```py
+esptool.py --chip esp32 --port /dev/ttyUSB0 write_flash 0x0 WLED_0.15.0_ESP32.bin
+```
+
+First boot, it creates a WiFi hotspot called `WLED-AP`. Connect to it, open `4.3.2.1` in a browser, configure your home WiFi. After that it lives on your network like any other device.
+
+## Configuring WLED
+
+Go to the IP address WLED gets from your router. The interface is a bit overwhelming at first — there are a lot of options. But the only ones that actually matter for the initial setup:
+
+**LED Preferences:**
+- LED count: 120 (or however many you have)
+- GPIO: 16 (whatever pin you used)
+- Color order: GRB (for WS2812B, it's almost always GRB not RGB — if your colors look wrong, this is why)
+
+**Power Management:**
+- Max current: set this to whatever your power source can handle. I set mine to 1500mA to stay safely within the monitor USB port's output.
+
+That's it. The rest — effects, palettes, presets — you figure out as you go. I spent way too long on this part.
+
+## Enter HyperHDR
+
+So the static bias lighting was already great. But then I found out about [HyperHDR](https://github.com/awawa-dev/HyperHDR).
+
+HyperHDR is a screen ambient lighting application. It captures what's on your screen in real time and pushes the average colors from each edge to the corresponding LEDs. So if there's a sunset scene in a video, the wall behind your monitor actually glows orange. 
+
+This is where the project went from "nice desk light" to "I might have a problem."
+
+I run it on a Raspberry Pi that already handles a few other things on my network. But you can run it on any machine — Windows, Linux, Mac.
+
+Setup:
+
+1. Install HyperHDR on whatever machine you want as the "server"
+2. In WLED, go to **Config → LED Preferences** and enable the **E1.31 / Artnet** protocol (or just use the HyperHDR UDP option — simpler)
+3. In HyperHDR, add a new LED output, select **Adalight / WLED** or **UDP**, point it at your ESP's IP
+
+The trickiest part is telling HyperHDR how your LEDs are physically laid out — which LED is at which position on the screen edge. You define this as a matrix. For a monitor-back setup, it's a U-shape going left edge → bottom → right edge.
+
+Mine looks like this (roughly):
+
+```
+Left column:  LEDs 0-29   (bottom to top)
+Bottom row:   LEDs 30-79  (left to right)
+Right column: LEDs 80-119 (top to bottom)
+```
+
+There's a LED layout generator on the HyperHDR wiki that helps. Use it. Doing it manually is miserable.
+
+## The Result
+
+It works really well. Like, better than I expected.
+
+For normal work — reading, coding — I run a warm static preset in WLED. Soft amber. No effects, no patterns. Just a consistent glow that makes the monitor feel less like a rectangle floating in the dark.
+
+For movies or YouTube, I switch HyperHDR on. The ambient sync is genuinely immersive. Not in a gimmicky way — it just extends the color space of what you're watching past the screen border. Your peripheral vision picks it up and the whole experience feels more expansive.
+
+Total cost came out to around ₹900 — ESP32 (~₹350), LED strip (~₹450), random resistors and capacitor from a components kit I already had. Less than a tenth of what a decent monitor light bar costs, with way more control over the output.
+
+The only thing I would do differently: route the USB cable more cleanly. Right now it's dangling off the back of the monitor and it bothers me every time I notice it. This is a future-me problem.
+
+If you want to replicate this, the WLED docs are genuinely good. Start there. Most of the confusion I had early on was solved by just reading them properly instead of trying to shortcut through YouTube tutorials.
+
+Also — if you're thinking "I could just buy a Govee LED strip for ₹1500 and skip all of this" — you could. It's fine. But you wouldn't learn anything, you'd be locked into their app, and it wouldn't be nearly as satisfying when it works.

@@ -23,13 +23,13 @@ As a backend engineer, I wanted more than just a VPS:
 
 ## Hardware
 
-some shit
+A beat up lenovo ideapad that I got in my first year of college for less than 60,000 INR (~650$)
 
-This runs 24/7 without noticeable power or noise impact.
+This runs 24/7 without noticeable power or fan noise.
 
 ## Operating System & Base Setup
 
-I’m running a **Debian-based Linux distribution**.
+I’m running a **Debian 12** server.
 
 Key choices:
 - No desktop environment
@@ -61,17 +61,11 @@ All services are routed through a reverse proxy:
 - Clean subdomain-based routing
 
 ### 2. Home Automation
-I run a local home automation server to control:
-- Lights
-- Sensors
-- Bluetooth/Zigbee devices
+I run Home Assistant on a docker container,  this controls all my lights, wled, matter devices. I have fallen in love with home assistant and now wanna buy more smart devices to add to my dashbord.
 
-Everything works **locally**, even if the internet goes down.
+### 3. Media
 
-### 3. Media & File Sharing
-- Private file-sharing service
-- Local media streaming
-- LAN-first, cloud-optional access
+The idea of owing your own media? hell yeah! Hence the second thing I installed on my server is Jellyfin and *arr services (again, everything on docker). A qbittorrent client (ofc to find/read books). The app i love the most now a days is called [Seer](https://github.com/seerr-team/seerr)...I will attach screenshots below.
 
 ### 4. Monitoring & Logs
 - System metrics (CPU, memory, disk)
@@ -106,19 +100,18 @@ This setup taught me more than most cloud tutorials ever could:
 
 - Linux internals
 - Real networking (NAT, DNS, ports)
-- Docker beyond “hello world”
+- Docker
 - Security tradeoffs
-- How systems fail in practice
 
 Most importantly, it gave me **confidence**. I know exactly what’s running, where my data lives, and how to fix things when they break.
 
 ## What’s Next
 
 Planned upgrades:
-- Local AI / LLM inference
-- Custom voice assistant backend
+- LLM inference (Mostly LlamaIndex)
 - Smarter monitoring & alerting
 - Power usage optimization
+- Host this website on my home server (maybe)
 
 This server isn’t “done”—it’s a living system.
 
