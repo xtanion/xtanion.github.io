@@ -1,9 +1,10 @@
 "use client"
 
 import Link from "next/link"
-import { useEffect, useRef, useState } from "react"
-import { Github, Twitter, Linkedin } from "lucide-react"
-import { SiteNav } from "./site-nav"
+import { useState, type ReactNode } from "react"
+import { Github, Linkedin, Mail, MapPin, Twitter, type LucideIcon } from "lucide-react"
+import { Guide } from "./guide"
+import { SiteFooter } from "./site-footer"
 import type { Post } from "../lib/posts"
 import type { Project } from "../lib/projects"
 
@@ -12,265 +13,191 @@ interface ClientHomeProps {
   projects: Project[]
 }
 
-const RAIL = [
-  { id: "intro", label: "intro" },
-  { id: "work", label: "work" },
-  { id: "projects", label: "projects" },
-  { id: "thoughts", label: "blog" },
-  { id: "connect", label: "connect" },
-]
+type Leaf = {
+  key: string
+  label: string
+  meta?: ReactNode
+  href?: string
+  external?: boolean
+  icon?: LucideIcon
+}
+
+type Node = {
+  id: string
+  label: string
+  leaves?: Leaf[]
+  prose?: ReactNode
+}
 
 const EXPERIENCE = [
-  {
-    year: "2026",
-    role: "Generative AI Engineer",
-    company: "Kodo (YC'21)",
-    description: "Working on the Reporting Agent, data pipelines and treasury.",
-    tech: ["Python", "Langsmith", "Langchain", "Debezium", "Redis", "RabbitMQ"],
-  },
-  {
-    year: "2024",
-    role: "Software Development Engineer",
-    company: "Edra Labs — a BrowserStack venture",
-    description:
-      "Led backend for AI-driven content systems: RAG platforms at 98% retrieval precision and autonomous SEO optimization.",
-    tech: ["Python", "TypeScript", "Langchain", "EKS", "PostgreSQL"],
-  },
-  {
-    year: "2023",
-    role: "Software Development Intern",
-    company: "Samagra | HCX",
-    description: "Implemented JWT auth with RSA encryption and FHIR JSON validation for healthcare APIs.",
-    tech: ["JWT", "RSA", "Google Cloud", "FHIR"],
-  },
-  {
-    year: "2022",
-    role: "Software Development Intern",
-    company: "Python Software Foundation",
-    description: "Enhanced the FURY renderer with glTF support, keyframe animations, and spline interpolation.",
-    tech: ["Python", "OpenGL", "glTF", "Graphics"],
-  },
+  { year: "2026", role: "generative ai engineer", company: "kodo (yc'21)" },
+  { year: "2024", role: "software development engineer", company: "edra labs" },
+  { year: "2023", role: "software development intern", company: "samagra | hcx" },
+  { year: "2022", role: "software development intern", company: "python software foundation" },
 ]
 
-const SOCIALS = [
-  { name: "GitHub", handle: "@xtanion", url: "https://github.com/xtanion", icon: Github },
-  { name: "Twitter", handle: "@xtanion", url: "https://x.com/xtanion", icon: Twitter },
-  { name: "LinkedIn", handle: "xtanion", url: "https://linkedin.com/in/xtanion", icon: Linkedin },
-]
+const WHOAMI = (
+  <>
+    <span className="hl-loud">shivam anand</span> — i build backend systems, generative ai and distributed
+    architectures.
+    <br />
+    currently a generative ai engineer at kodo (yc&apos;21); before that edra labs, samagra and the python software
+    foundation.
+    <br />
+    off the clock i tinker with my home server and chip away at rust.
+    <br />
+    <span className="tree-status">
+      <MapPin size={13} strokeWidth={1.5} aria-hidden="true" />
+      mumbai, india
+    </span>
+    <span className="hl">available for work</span>
+  </>
+)
 
-const FOCUS = ["Rust", "Python", "C++", "Redis", "RabbitMQ", "AWS", "Docker"]
+const CONTACT: Leaf[] = [
+  {
+    key: "email",
+    label: "anandshivam54321@gmail.com",
+    meta: "email",
+    href: "mailto:anandshivam54321@gmail.com",
+    icon: Mail,
+  },
+  { key: "github", label: "@xtanion", meta: "github", href: "https://github.com/xtanion", external: true, icon: Github },
+  { key: "twitter", label: "@xtanion", meta: "twitter", href: "https://x.com/xtanion", external: true, icon: Twitter },
+  {
+    key: "linkedin",
+    label: "xtanion",
+    meta: "linkedin",
+    href: "https://linkedin.com/in/xtanion",
+    external: true,
+    icon: Linkedin,
+  },
+]
 
 export default function ClientHome({ posts, projects }: ClientHomeProps) {
-  const [active, setActive] = useState("intro")
-  const sectionsRef = useRef<(HTMLElement | null)[]>([])
+  const [open, setOpen] = useState<string[]>([])
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) setActive(entry.target.id)
-        })
-      },
-      { threshold: 0.2, rootMargin: "-40% 0px -40% 0px" },
-    )
-    sectionsRef.current.forEach((s) => s && observer.observe(s))
-    return () => observer.disconnect()
-  }, [])
+  const toggle = (id: string) =>
+    setOpen((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]))
 
-  const setRef = (i: number) => (el: HTMLElement | null) => {
-    sectionsRef.current[i] = el
-  }
+  const nodes: Node[] = [
+    { id: "whoami", label: "whoami", prose: WHOAMI },
+    {
+      id: "exp",
+      label: "exp",
+      leaves: EXPERIENCE.map((job) => ({
+        key: job.year,
+        label: `${job.role} @ ${job.company}`,
+        meta: job.year,
+      })),
+    },
+    {
+      id: "proj",
+      label: "proj",
+      leaves: projects.map((project) => ({
+        key: project.slug,
+        label: project.title,
+        meta: project.year,
+        href: `/projects/${project.slug}`,
+      })),
+    },
+    {
+      id: "blogs",
+      label: "blogs",
+      leaves: posts.map((post) => ({
+        key: post.slug,
+        label: post.title,
+        meta: (
+          <>
+            {post.date}
+            <span className="tree-meta-long"> · {post.readTime}</span>
+          </>
+        ),
+        href: `/thoughts/${post.slug}`,
+      })),
+    },
+    { id: "contact", label: "contact", leaves: CONTACT },
+  ]
 
   return (
-    <div className="shell">
-      <SiteNav home />
+    <div className="tree-page">
+      <main className="tree">
+        <p className="eyebrow tree-eyebrow">index</p>
 
-      <nav className="rail" aria-label="Sections">
-        {RAIL.map((s) => (
-          <button
-            key={s.id}
-            className={`rail-item${active === s.id ? " active" : ""}`}
-            onClick={() => document.getElementById(s.id)?.scrollIntoView({ behavior: "smooth" })}
-            aria-label={`Go to ${s.label}`}
-          >
-            <span className="rail-bar" aria-hidden="true" />
-            <span className="rail-label">{s.label}</span>
-          </button>
-        ))}
-      </nav>
-
-      <main className="main">
-        <div className="frame">
-          <section id="intro" ref={setRef(0)}>
-            <div className="stack-24">
-              <div className="stack-12">
-                <span className="eyebrow">hi, i am</span>
-                <h1 className="hero-title">Shivam Anand</h1>
-                <p className="lead">
-                  I build <span className="hl">backend systems</span>, <span className="hl">generative AI</span>, and{" "}
-                  <span className="hl">distributed architectures</span>. Off the clock I tinker with my home server
-                  and chip away at Rust.
-                </p>
-              </div>
-
-              <div className="status">
-                <span className="live">
-                  <span className="pip" aria-hidden="true" />
-                  available for work
-                </span>
-                <span>Mumbai, India</span>
-              </div>
-
-              <div className="cells cells-2">
-                <div className="cell">
-                  <div className="def-k">currently</div>
-                  <div className="stack-4">
-                    <span className="loud">Generative AI Engineer</span>
-                    <span className="muted">@ Kodo (YC'21)</span>
-                    <span className="mono-xs tnum">Jan 2026 — Present</span>
-                  </div>
-                </div>
-                <div className="cell">
-                  <div className="def-k">focus</div>
-                  <div className="tag-row">
-                    {FOCUS.map((s) => (
-                      <span key={s} className="tag">
-                        {s}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <section id="work" ref={setRef(1)}>
-            <div className="section-head">
-              <h2 className="t-title">Work</h2>
-              <span className="mono-xs tnum">2022 — 2026</span>
-            </div>
-
-            <div className="rows">
-              {EXPERIENCE.map((job) => (
-                <div key={job.year} className="row">
-                  <div className="row-year">{job.year}</div>
-                  <div className="row-body">
-                    <div className="row-title-line">
-                      <span className="h-sm">{job.role}</span>
-                      <span className="muted mono-xs">{job.company}</span>
-                    </div>
-                    <p className="lead">{job.description}</p>
-                    <div className="tag-row">
-                      {job.tech.map((t) => (
-                        <span key={t} className="tag">
-                          {t}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          <section id="projects" ref={setRef(2)}>
-            <div className="section-head">
-              <h2 className="t-title">Projects</h2>
-              <span className="mono-xs">{projects.length} shipped</span>
-            </div>
-
-            <div className="cells cells-2">
-              {projects.map((project) => (
-                <Link key={project.slug} href={`/projects/${project.slug}`} className="cell" aria-label={project.title}>
-                  <div className="cell-head">
-                    <span className="tnum">{project.year}</span>
-                    <span className="cell-arrow" aria-hidden="true">
-                      →
-                    </span>
-                  </div>
-                  <span className="h-sm">{project.title}</span>
-                  <p className="lead">{project.description}</p>
-                  <div className="tag-row" style={{ marginTop: "auto" }}>
-                    {project.tech.map((t) => (
-                      <span key={t} className="tag">
-                        {t}
-                      </span>
-                    ))}
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </section>
-
-          <section id="thoughts" ref={setRef(3)}>
-            <div className="section-head">
-              <h2 className="t-title">Writing</h2>
-              <span className="mono-xs">{posts.length} posts</span>
-            </div>
-
-            <div className="cells cells-2">
-              {posts.map((post) => (
-                <Link key={post.slug} href={`/thoughts/${post.slug}`} className="cell" aria-label={post.title}>
-                  <div className="cell-head">
-                    <span className="tnum">{post.date}</span>
-                    <span className="tnum">{post.readTime}</span>
-                  </div>
-                  <span className="h-sm">{post.title}</span>
-                  <p className="lead">{post.excerpt}</p>
-                  <div className="tag-row" style={{ marginTop: "auto" }}>
-                    {post.tags.map((t) => (
-                      <span key={t} className="tag">
-                        {t}
-                      </span>
-                    ))}
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </section>
-
-          <section id="connect" ref={setRef(4)}>
-            <div className="stack-24">
-              <div className="stack-12">
-                <span className="eyebrow">say hi</span>
-                <h2 className="t-title">Let's connect</h2>
-                <p className="lead">
-                  Always up for new opportunities, collaborations, and conversations about systems and AI.
-                </p>
-                <Link href="mailto:anandshivam54321@gmail.com" className="btn btn-grad arrow-link" style={{ alignSelf: "flex-start" }}>
-                  anandshivam54321@gmail.com
-                  <span className="arrow-ico" aria-hidden="true">→</span>
-                </Link>
-              </div>
-
-              <div className="stack-12">
-                <span className="def-k">elsewhere</span>
-                <div className="cells cells-2">
-                  {SOCIALS.map((s) => {
-                    const Icon = s.icon
-                    return (
-                      <Link key={s.name} href={s.url} className="cell social-cell" target="_blank" rel="noreferrer">
-                        <div className="row-title-line">
-                          <Icon className="w-4 h-4" width={16} height={16} />
-                          <span className="h-sm">{s.name}</span>
-                        </div>
-                        <span className="mono-xs">{s.handle}</span>
-                      </Link>
-                    )
-                  })}
-                </div>
-              </div>
-            </div>
-          </section>
+        <div className="tree-row tree-root">
+          <span className="tree-mark">-</span>
+          <span className="tree-name">root/</span>
         </div>
+
+        {nodes.map((node, i) => {
+          const lastNode = i === nodes.length - 1
+          const isOpen = open.includes(node.id)
+
+          return (
+            <div key={node.id}>
+              <button
+                type="button"
+                className={`tree-row tree-dir${isOpen ? " open" : ""}`}
+                aria-expanded={isOpen}
+                onClick={() => toggle(node.id)}
+              >
+                <Guide kind={lastNode ? "end" : "tee"} />
+                <span className="tree-mark">{isOpen ? "-" : "+"}</span>
+                <span className="tree-name">{node.label}/</span>
+              </button>
+
+              {isOpen && node.prose && (
+                <div className="tree-row tree-prose-row">
+                  <Guide kind={lastNode ? "blank" : "line"} />
+                  <p className="tree-prose">{node.prose}</p>
+                </div>
+              )}
+
+              {isOpen &&
+                node.leaves?.map((leaf, j) => {
+                  const Icon = leaf.icon
+                  const body = (
+                    <>
+                      <Guide kind={lastNode ? "blank" : "line"} />
+                      <Guide kind={j === (node.leaves?.length ?? 0) - 1 ? "end" : "tee"} />
+                      {Icon && <Icon className="tree-ico" size={13} strokeWidth={1.5} aria-hidden="true" />}
+                      <span className="tree-name">{leaf.label}</span>
+                      <span className="tree-right">
+                        {leaf.meta && <span className="tree-meta tnum">{leaf.meta}</span>}
+                      </span>
+                    </>
+                  )
+
+                  if (!leaf.href) {
+                    return (
+                      <div key={leaf.key} className="tree-row tree-leaf">
+                        {body}
+                      </div>
+                    )
+                  }
+
+                  return leaf.external ? (
+                    <a
+                      key={leaf.key}
+                      href={leaf.href}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="tree-row tree-leaf tree-link"
+                    >
+                      {body}
+                    </a>
+                  ) : (
+                    <Link key={leaf.key} href={leaf.href} className="tree-row tree-leaf tree-link">
+                      {body}
+                    </Link>
+                  )
+                })}
+            </div>
+          )
+        })}
       </main>
 
-      <footer className="foot">
-        <div className="foot-inner">
-          <span>© 2026 Shivam Anand</span>
-          <span className="mono-xs">built terminal-style · monospace · one green</span>
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   )
 }

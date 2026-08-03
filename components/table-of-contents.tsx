@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { Guide } from "./guide"
 
 interface Heading {
   id: string
@@ -14,6 +15,9 @@ interface TableOfContentsProps {
 
 export function TableOfContents({ headings }: TableOfContentsProps) {
   const [activeId, setActiveId] = useState<string>("")
+  const [open, setOpen] = useState(false)
+
+  const sections = headings.filter((h) => h.level === 2)
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -25,33 +29,44 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
       { rootMargin: "0px 0px -80% 0px" },
     )
 
-    headings.forEach((heading) => {
+    sections.forEach((heading) => {
       const element = document.getElementById(heading.id)
       if (element) observer.observe(element)
     })
 
     return () => observer.disconnect()
-  }, [headings])
+  }, [sections])
 
-  if (headings.length === 0) return null
+  if (sections.length < 3) return null
 
   const scrollToHeading = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" })
   }
 
   return (
-    <nav className="rail" aria-label="On this page">
-      {headings.map((heading) => (
-        <button
-          key={heading.id}
-          onClick={() => scrollToHeading(heading.id)}
-          className={`rail-item${heading.level === 3 ? " rail-l3" : ""}${activeId === heading.id ? " active" : ""}`}
-          aria-label={`Navigate to ${heading.text}`}
-        >
-          <span className="rail-bar" aria-hidden="true" />
-          <span className="rail-label">{heading.text}</span>
-        </button>
-      ))}
+    <nav className="art-toc" aria-label="On this page">
+      <button
+        type="button"
+        className={`tree-row tree-dir${open ? " open" : ""}`}
+        aria-expanded={open}
+        onClick={() => setOpen((v) => !v)}
+      >
+        <span className="tree-mark">{open ? "-" : "+"}</span>
+        <span className="tree-name">contents/</span>
+      </button>
+
+      {open &&
+        sections.map((heading, i) => (
+          <button
+            key={heading.id}
+            type="button"
+            className={`tree-row tree-link${activeId === heading.id ? " active" : ""}`}
+            onClick={() => scrollToHeading(heading.id)}
+          >
+            <Guide kind={i === sections.length - 1 ? "end" : "tee"} />
+            <span className="tree-name">{heading.text}</span>
+          </button>
+        ))}
     </nav>
   )
 }

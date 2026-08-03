@@ -1,11 +1,11 @@
 1:"$Sreact.fragment"
 2:I[39756,["/_next/static/chunks/01xlw8hd842-c.js","/_next/static/chunks/0d3shmwh5_nmn.js"],"default"]
 3:I[37457,["/_next/static/chunks/01xlw8hd842-c.js","/_next/static/chunks/0d3shmwh5_nmn.js"],"default"]
-4:I[15043,["/_next/static/chunks/01xlw8hd842-c.js","/_next/static/chunks/0d3shmwh5_nmn.js","/_next/static/chunks/0158avlii_e8n.js"],"default"]
+4:I[15043,["/_next/static/chunks/01xlw8hd842-c.js","/_next/static/chunks/0d3shmwh5_nmn.js","/_next/static/chunks/0d_wt7tpmr9md.js"],"default"]
 c:I[68027,["/_next/static/chunks/01xlw8hd842-c.js","/_next/static/chunks/0d3shmwh5_nmn.js"],"default",1]
-:HL["/_next/static/chunks/00l9fgedqyt-o.css","style"]
+:HL["/_next/static/chunks/0wno654y__e3e.css","style"]
 :HC["/",""]
-5:Td95,
+5:Td6d,
 Over the last few months, I’ve been gradually building a **home server** that I actually *use* every day. Why? You may ask, basically to be free of the usual internet (and also because Gilfoyle from silicon valley conviced me to build my own Anton).
 
 This blog walks through **why I built it, what I’m running, and how everything fits together**.
@@ -27,8 +27,6 @@ some shit
 
 This runs 24/7 without noticeable power or noise impact.
 
----
-
 ## Operating System & Base Setup
 
 I’m running a **Debian-based Linux distribution**.
@@ -42,8 +40,6 @@ Key choices:
 
 Keeping the OS minimal reduces attack surface and keeps maintenance simple.
 
----
-
 ## Containerization with Docker
 
 Everything runs inside **Docker containers**, managed via Docker Compose.
@@ -55,8 +51,6 @@ Why Docker?
 - Fast rollback if something breaks
 
 Each service lives in its own compose file with persistent volumes mapped to disk.
-
----
 
 ## Services I’m Running
 
@@ -86,8 +80,6 @@ Everything works **locally**, even if the internet goes down.
 
 If something breaks, I know *why*.
 
----
-
 ## Networking & Remote Access
 
 My ISP doesn’t provide a static IP, so I use:
@@ -96,8 +88,6 @@ My ISP doesn’t provide a static IP, so I use:
 - No exposed services without authentication
 
 Security always comes before convenience.
-
----
 
 ## Backups & Data Safety
 
@@ -109,8 +99,6 @@ My strategy:
 - Encrypted backups for sensitive data
 
 Rebuilding the server from scratch takes under an hour.
-
----
 
 ## What I Learned
 
@@ -124,8 +112,6 @@ This setup taught me more than most cloud tutorials ever could:
 
 Most importantly, it gave me **confidence**. I know exactly what’s running, where my data lives, and how to fix things when they break.
 
----
-
 ## What’s Next
 
 Planned upgrades:
@@ -135,8 +121,6 @@ Planned upgrades:
 - Power usage optimization
 
 This server isn’t “done”—it’s a living system.
-
----
 
 ## Final Thoughts
 
@@ -171,11 +155,10 @@ The system leverages:
 ## Performance
 
 Achieved 99.9% uptime with average task processing time under 100ms and automatic retry mechanisms for failed tasks.
-7:T86c,
+7:T865,
 Here's a journey of how we build a smart web crawler before FireCrawl/etc existed.
 
 ## Story Time
----
 
 (you may skip if you want)
 
@@ -203,7 +186,7 @@ But this didn't scaled well, because of the following reasons:
 
 
 ## Key Features
----
+
 - **98% Retrieval Precision**: Achieved industry-leading accuracy in document retrieval
 - **Automated Content Optimization**: ML-powered content enhancement and SEO optimization
 - **Scalable Architecture**: Handles millions of documents with sub-second query times
@@ -288,16 +271,16 @@ Shipped 5 major features and 5 smaller patches across 14 weeks:
 - [Morphing support](https://github.com/fury-gl/fury/pull/700)
 
 PBR implementation is still pending, but it will be really cool to see some development on the PBR sides.
-0:{"P":null,"c":["",""],"q":"","i":false,"f":[[["",{"children":["__PAGE__",{}]},"$undefined","$undefined",16],[["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/00l9fgedqyt-o.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","script","script-0",{"src":"/_next/static/chunks/01xlw8hd842-c.js","async":true,"nonce":"$undefined"}],["$","script","script-1",{"src":"/_next/static/chunks/0d3shmwh5_nmn.js","async":true,"nonce":"$undefined"}]],["$","html",null,{"lang":"en","className":"dark","suppressHydrationWarning":true,"children":["$","body",null,{"children":["$","$L2",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L3",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[[["$","title",null,{"children":"404: This page could not be found."}],["$","div",null,{"style":{"fontFamily":"system-ui,\"Segoe UI\",Roboto,Helvetica,Arial,sans-serif,\"Apple Color Emoji\",\"Segoe UI Emoji\"","height":"100vh","textAlign":"center","display":"flex","flexDirection":"column","alignItems":"center","justifyContent":"center"},"children":["$","div",null,{"children":[["$","style",null,{"dangerouslySetInnerHTML":{"__html":"body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}"}}],["$","h1",null,{"className":"next-error-h1","style":{"display":"inline-block","margin":"0 20px 0 0","padding":"0 23px 0 0","fontSize":24,"fontWeight":500,"verticalAlign":"top","lineHeight":"49px"},"children":404}],["$","div",null,{"style":{"display":"inline-block"},"children":["$","h2",null,{"style":{"fontSize":14,"fontWeight":400,"lineHeight":"49px","margin":0},"children":"This page could not be found."}]}]]}]}]],[]],"forbidden":"$undefined","unauthorized":"$undefined"}]}]}]]}],{"children":[["$","$1","c",{"children":[["$","$L4",null,{"posts":[{"slug":"some-fancy-lights","title":"Extremely Fancy Lights (feat. WLED and HyperHDR)","excerpt":"Learning about self hosting, contol. access management and a computer networks","date":"May 2025","readTime":"5 min","tags":["Self Hosted","OSS","Linux","Debian","Docker","ESP"],"content":"\ntbd\n"},{"slug":"my-home-server-setup","title":"I Built a Home Server","excerpt":"Learning about self hosting, contol. access management and a computer networks","date":"Jan 2025","readTime":"8 min","tags":["Self Hosted","OSS","Linux","Debian","Docker","ESP"],"content":"$5"}],"projects":[{"slug":"distributed-task-processing","title":"Distributed Task Processing","description":"Scalable Celery-based task queue system handling 10k+ concurrent operations with Redis clustering and PostgreSQL optimization.","year":"2024","status":"Production","tech":["Python","Celery","Redis","PostgreSQL"],"content":"$6"},{"slug":"rag-content-system","title":"A smart web-scrapper?","description":"We built a smart (kinda) webscrapper with 98% recall accuracy on production.","year":"2024","status":"Edra Labs","tech":["Python","Vector DB","LangChain","FastAPI"],"content":"$7"},{"slug":"3d-renderer-enhancement","title":"glTF Integration for FURY","description":"Implemented comprehensive glTF 2.0 support for the FURY scientific visualization library including skeletal animations, morphing, and model import/export capabilities during Google Summer of Code 2022.","year":"2022","status":"Google Summer of Code","tech":["Python","OpenGL","glTF 2.0","VTK","Computer Graphics"],"content":"$8"}]}],["$L9"],"$La"]}],{},null,false,null]},null,false,null],"$Lb",false]],"m":"$undefined","G":["$c",["$Ld"]],"S":true,"h":null,"s":"$undefined","l":"$undefined","p":"$undefined","d":"$undefined","b":"7v0yTuIVd-_e4EOVzjp2F"}
+0:{"P":null,"c":["",""],"q":"","i":false,"f":[[["",{"children":["__PAGE__",{}]},"$undefined","$undefined",16],[["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/0wno654y__e3e.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","script","script-0",{"src":"/_next/static/chunks/01xlw8hd842-c.js","async":true,"nonce":"$undefined"}],["$","script","script-1",{"src":"/_next/static/chunks/0d3shmwh5_nmn.js","async":true,"nonce":"$undefined"}]],["$","html",null,{"lang":"en","className":"dark","suppressHydrationWarning":true,"children":["$","body",null,{"children":["$","$L2",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L3",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[[["$","title",null,{"children":"404: This page could not be found."}],["$","div",null,{"style":{"fontFamily":"system-ui,\"Segoe UI\",Roboto,Helvetica,Arial,sans-serif,\"Apple Color Emoji\",\"Segoe UI Emoji\"","height":"100vh","textAlign":"center","display":"flex","flexDirection":"column","alignItems":"center","justifyContent":"center"},"children":["$","div",null,{"children":[["$","style",null,{"dangerouslySetInnerHTML":{"__html":"body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}"}}],["$","h1",null,{"className":"next-error-h1","style":{"display":"inline-block","margin":"0 20px 0 0","padding":"0 23px 0 0","fontSize":24,"fontWeight":500,"verticalAlign":"top","lineHeight":"49px"},"children":404}],["$","div",null,{"style":{"display":"inline-block"},"children":["$","h2",null,{"style":{"fontSize":14,"fontWeight":400,"lineHeight":"49px","margin":0},"children":"This page could not be found."}]}]]}]}]],[]],"forbidden":"$undefined","unauthorized":"$undefined"}]}]}]]}],{"children":[["$","$1","c",{"children":[["$","$L4",null,{"posts":[{"slug":"some-fancy-lights","title":"Extremely Fancy Lights (feat. WLED and HyperHDR)","excerpt":"Learning about self hosting, contol. access management and a computer networks","date":"May 2025","readTime":"5 min","tags":["Self Hosted","OSS","Linux","Debian","Docker","ESP"],"content":"\ntbd\n"},{"slug":"my-home-server-setup","title":"I Built a Home Server","excerpt":"Learning about self hosting, contol. access management and a computer networks","date":"Jan 2025","readTime":"8 min","tags":["Self Hosted","OSS","Linux","Debian","Docker","ESP"],"content":"$5"}],"projects":[{"slug":"distributed-task-processing","title":"Distributed Task Processing","description":"Scalable Celery-based task queue system handling 10k+ concurrent operations with Redis clustering and PostgreSQL optimization.","year":"2024","status":"Production","tech":["Python","Celery","Redis","PostgreSQL"],"content":"$6"},{"slug":"rag-content-system","title":"A smart web-scrapper?","description":"We built a smart (kinda) webscrapper with 98% recall accuracy on production.","year":"2024","status":"Edra Labs","tech":["Python","Vector DB","LangChain","FastAPI"],"content":"$7"},{"slug":"3d-renderer-enhancement","title":"glTF Integration for FURY","description":"Implemented comprehensive glTF 2.0 support for the FURY scientific visualization library including skeletal animations, morphing, and model import/export capabilities during Google Summer of Code 2022.","year":"2022","status":"Google Summer of Code","tech":["Python","OpenGL","glTF 2.0","VTK","Computer Graphics"],"content":"$8"}]}],["$L9"],"$La"]}],{},null,false,null]},null,false,null],"$Lb",false]],"m":"$undefined","G":["$c",["$Ld"]],"S":true,"h":null,"s":"$undefined","l":"$undefined","p":"$undefined","d":"$undefined","b":"YwK_ZAvswfvY_MH69g4QB"}
 e:I[97367,["/_next/static/chunks/01xlw8hd842-c.js","/_next/static/chunks/0d3shmwh5_nmn.js"],"OutletBoundary"]
 f:"$Sreact.suspense"
 11:I[97367,["/_next/static/chunks/01xlw8hd842-c.js","/_next/static/chunks/0d3shmwh5_nmn.js"],"ViewportBoundary"]
 13:I[97367,["/_next/static/chunks/01xlw8hd842-c.js","/_next/static/chunks/0d3shmwh5_nmn.js"],"MetadataBoundary"]
-9:["$","script","script-0",{"src":"/_next/static/chunks/0158avlii_e8n.js","async":true,"nonce":"$undefined"}]
+9:["$","script","script-0",{"src":"/_next/static/chunks/0d_wt7tpmr9md.js","async":true,"nonce":"$undefined"}]
 a:["$","$Le",null,{"children":["$","$f",null,{"name":"Next.MetadataOutlet","children":"$@10"}]}]
 b:["$","$1","h",{"children":[null,["$","$L11",null,{"children":"$L12"}],["$","div",null,{"hidden":true,"children":["$","$L13",null,{"children":["$","$f",null,{"name":"Next.Metadata","children":"$L14"}]}]}],null]}]
-d:["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/00l9fgedqyt-o.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]
+d:["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/0wno654y__e3e.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]
 12:[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]
 15:I[27201,["/_next/static/chunks/01xlw8hd842-c.js","/_next/static/chunks/0d3shmwh5_nmn.js"],"IconMark"]
 10:null
-14:[["$","title","0",{"children":"xtanion - Shivam Anand | Software Engineer"}],["$","meta","1",{"name":"description","content":"Software engineer specializing in backend systems, AI, and distributed architectures."}],["$","meta","2",{"name":"author","content":"xtanion"}],["$","meta","3",{"name":"author","content":"Shivam Anand"}],["$","meta","4",{"name":"generator","content":"Next.js"}],["$","meta","5",{"name":"keywords","content":"xtanion,Shivam Anand,software engineer,backend engineer,AI,distributed systems,full stack developer,Edra Labs,IIT Roorkee,IITR"}],["$","meta","6",{"name":"creator","content":"xtanion"}],["$","meta","7",{"name":"publisher","content":"xtanion"}],["$","meta","8",{"name":"robots","content":"index, follow"}],["$","meta","9",{"name":"googlebot","content":"index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1"}],["$","link","10",{"rel":"canonical","href":"https://xtanion.github.io/portfolio"}],["$","meta","11",{"property":"og:title","content":"xtanion - Shivam Anand | Software Engineer"}],["$","meta","12",{"property":"og:description","content":"Software engineer specializing in backend systems, AI/ML platforms, and distributed architectures."}],["$","meta","13",{"property":"og:url","content":"https://xtanion.github.io/portfolio"}],["$","meta","14",{"property":"og:site_name","content":"xtanion"}],["$","meta","15",{"property":"og:locale","content":"en_US"}],["$","meta","16",{"property":"og:image","content":"https://xtanion.github.io/portfolio/portfolio/banner.png"}],["$","meta","17",{"property":"og:image:width","content":"1200"}],["$","meta","18",{"property":"og:image:height","content":"630"}],["$","meta","19",{"property":"og:image:alt","content":"Shivam Anand - Software Developer"}],["$","meta","20",{"property":"og:type","content":"website"}],["$","meta","21",{"name":"twitter:card","content":"summary_large_image"}],["$","meta","22",{"name":"twitter:creator","content":"@xtanion"}],["$","meta","23",{"name":"twitter:title","content":"xtanion - Shivam Anand | Software Engineer"}],["$","meta","24",{"name":"twitter:description","content":"Software engineer specializing in backend systems, AI/ML platforms, and distributed architectures."}],["$","meta","25",{"name":"twitter:image","content":"https://xtanion.github.io/portfolio/portfolio/banner.png"}],["$","link","26",{"rel":"icon","href":"/portfolio/penguin.svg"}],["$","$L15","27",{}]]
+14:[["$","title","0",{"children":"xtanion - portfolio"}],["$","meta","1",{"name":"description","content":"Software engineer specializing in backend systems, AI, and distributed architectures."}],["$","meta","2",{"name":"author","content":"xtanion"}],["$","meta","3",{"name":"author","content":"Shivam Anand"}],["$","meta","4",{"name":"generator","content":"Next.js"}],["$","meta","5",{"name":"keywords","content":"xtanion,Shivam Anand,software engineer,backend engineer,AI,distributed systems,full stack developer,Edra Labs,IIT Roorkee,IITR"}],["$","meta","6",{"name":"creator","content":"xtanion"}],["$","meta","7",{"name":"publisher","content":"xtanion"}],["$","meta","8",{"name":"robots","content":"index, follow"}],["$","meta","9",{"name":"googlebot","content":"index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1"}],["$","link","10",{"rel":"canonical","href":"https://xtanion.github.io/portfolio"}],["$","meta","11",{"property":"og:title","content":"xtanion - Shivam Anand | Software Engineer"}],["$","meta","12",{"property":"og:description","content":"Software engineer specializing in backend systems, AI/ML platforms, and distributed architectures."}],["$","meta","13",{"property":"og:url","content":"https://xtanion.github.io/portfolio"}],["$","meta","14",{"property":"og:site_name","content":"xtanion"}],["$","meta","15",{"property":"og:locale","content":"en_US"}],["$","meta","16",{"property":"og:image","content":"https://xtanion.github.io/portfolio/portfolio/banner.png"}],["$","meta","17",{"property":"og:image:width","content":"1200"}],["$","meta","18",{"property":"og:image:height","content":"630"}],["$","meta","19",{"property":"og:image:alt","content":"Shivam Anand - Software Developer"}],["$","meta","20",{"property":"og:type","content":"website"}],["$","meta","21",{"name":"twitter:card","content":"summary_large_image"}],["$","meta","22",{"name":"twitter:creator","content":"@xtanion"}],["$","meta","23",{"name":"twitter:title","content":"xtanion - Shivam Anand | Software Engineer"}],["$","meta","24",{"name":"twitter:description","content":"Software engineer specializing in backend systems, AI/ML platforms, and distributed architectures."}],["$","meta","25",{"name":"twitter:image","content":"https://xtanion.github.io/portfolio/portfolio/banner.png"}],["$","link","26",{"rel":"icon","href":"/portfolio/dog_128.png","type":"image/png","sizes":"128x128"}],["$","link","27",{"rel":"apple-touch-icon","href":"/portfolio/dog_128.png"}],["$","$L15","28",{}]]

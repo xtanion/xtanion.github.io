@@ -5,7 +5,7 @@ import "./globals.css"
 export const metadata: Metadata = {
   metadataBase: new URL('https://xtanion.github.io/portfolio'),
   title: {
-    default: "xtanion - Shivam Anand | Software Engineer",
+    default: "xtanion - portfolio",
     template: "%s | xtanion"
   },
   description: "Software engineer specializing in backend systems, AI, and distributed architectures.",
@@ -47,7 +47,10 @@ export const metadata: Metadata = {
     images: ['/portfolio/banner.png'],
   },
   icons: {
-    icon: '/portfolio/penguin.svg',
+    icon: [
+      { url: '/portfolio/dog_128.png', type: 'image/png', sizes: '128x128' },
+    ],
+    apple: '/portfolio/dog_128.png',
   },
   alternates: {
     canonical: 'https://xtanion.github.io/portfolio',

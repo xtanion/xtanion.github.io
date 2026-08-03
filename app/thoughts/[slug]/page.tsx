@@ -1,14 +1,12 @@
 import type { Metadata } from "next"
-import Link from "next/link"
 import { notFound } from "next/navigation"
 import { MDXRemote } from "next-mdx-remote/rsc"
 import { getPostBySlug, getAllPosts } from "../../../lib/posts"
 import { mdxComponents } from "../../../components/mdx-components"
-import { SiteNav } from "../../../components/site-nav"
-import { TableOfContents } from "../../../components/table-of-contents"
+import { ArticleShell } from "../../../components/article-shell"
 
 type PageProps = {
-  params: { slug: string }
+  params: Promise<{ slug: string }>
 }
 
 export function generateStaticParams() {
@@ -39,8 +37,9 @@ function extractHeadings(content: string) {
   return headings
 }
 
-export function generateMetadata({ params }: PageProps): Metadata {
-  const post = getPostBySlug(params.slug)
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { slug } = await params
+  const post = getPostBySlug(slug)
   if (!post) return {}
   return {
     title: `${post.title} — Shivam Anand`,
@@ -48,45 +47,22 @@ export function generateMetadata({ params }: PageProps): Metadata {
   }
 }
 
-export default function ThoughtPage({ params }: PageProps) {
-  const post = getPostBySlug(params.slug)
+export default async function ThoughtPage({ params }: PageProps) {
+  const { slug } = await params
+  const post = getPostBySlug(slug)
   if (!post) return notFound()
 
-  const headings = extractHeadings(post.content)
-
   return (
-    <div className="shell">
-      <SiteNav />
-      <TableOfContents headings={headings} />
-
-      <main className="main article-shell">
-        <div className="frame">
-          <Link href="/#thoughts" className="btn-ghost arrow-link" style={{ display: "inline-flex", alignItems: "center", gap: "8px", fontSize: "12px" }}>
-            <span className="arrow-ico" aria-hidden="true">←</span>
-            index
-          </Link>
-
-          <header className="article-head" style={{ marginTop: "20px" }}>
-            <div className="article-meta">
-              <span className="eyebrow" style={{ margin: 0 }}>writing</span>
-              <span className="tnum">{post.date} · {post.readTime}</span>
-            </div>
-            <h1 className="article-title">{post.title}</h1>
-            <p className="lead">{post.excerpt}</p>
-            <div className="tag-row">
-              {post.tags.map((tag) => (
-                <span key={tag} className="tag">
-                  {tag}
-                </span>
-              ))}
-            </div>
-          </header>
-
-          <article role="article" className="md">
-            <MDXRemote source={post.content} components={mdxComponents} />
-          </article>
-        </div>
-      </main>
-    </div>
+    <ArticleShell
+      section="blogs"
+      slug={slug}
+      title={post.title}
+      lead={post.excerpt}
+      meta={`${post.date} · ${post.readTime}`}
+      tags={post.tags}
+      headings={extractHeadings(post.content)}
+    >
+      <MDXRemote source={post.content} components={mdxComponents} />
+    </ArticleShell>
   )
 }

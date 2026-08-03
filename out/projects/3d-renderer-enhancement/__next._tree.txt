@@ -1,3 +1,7 @@
-:HL["/_next/static/chunks/00l9fgedqyt-o.css","style"]
+:HL["/_next/static/chunks/0wno654y__e3e.css","style"]
 :HC["/",""]
-0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"projects","param":null,"prefetchHints":0,"slots":{"children":{"name":"slug","param":{"type":"d","key":"3d-renderer-enhancement","siblings":null},"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}}}},"staleTime":300,"buildId":"7v0yTuIVd-_e4EOVzjp2F"}
+:HL["https://user-images.githubusercontent.com/74976752/174492510-b9f10816-3058-4a7b-a260-0627406354ba.png","image"]
+:HL["https://user-images.githubusercontent.com/74976752/217645594-6054ea83-12e5-4868-b6a1-eee5a154bd26.gif","image"]
+:HL["https://user-images.githubusercontent.com/74976752/217645485-153ec403-6c87-4282-8907-30d921106b34.gif","image"]
+:HL["https://user-images.githubusercontent.com/74976752/217645367-f901c6ed-ca20-40d6-92dd-f1cd8899ac7a.gif","image"]
+0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"projects","param":null,"prefetchHints":0,"slots":{"children":{"name":"slug","param":{"type":"d","key":"3d-renderer-enhancement","siblings":null},"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}}}},"staleTime":300,"buildId":"YwK_ZAvswfvY_MH69g4QB"}

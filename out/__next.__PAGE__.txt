@@ -1,8 +1,8 @@
 1:"$Sreact.fragment"
-2:I[15043,["/_next/static/chunks/01xlw8hd842-c.js","/_next/static/chunks/0d3shmwh5_nmn.js","/_next/static/chunks/0158avlii_e8n.js"],"default"]
+2:I[15043,["/_next/static/chunks/01xlw8hd842-c.js","/_next/static/chunks/0d3shmwh5_nmn.js","/_next/static/chunks/0d_wt7tpmr9md.js"],"default"]
 9:I[97367,["/_next/static/chunks/01xlw8hd842-c.js","/_next/static/chunks/0d3shmwh5_nmn.js"],"OutletBoundary"]
 a:"$Sreact.suspense"
-3:Td95,
+3:Td6d,
 Over the last few months, I’ve been gradually building a **home server** that I actually *use* every day. Why? You may ask, basically to be free of the usual internet (and also because Gilfoyle from silicon valley conviced me to build my own Anton).
 
 This blog walks through **why I built it, what I’m running, and how everything fits together**.
@@ -24,8 +24,6 @@ some shit
 
 This runs 24/7 without noticeable power or noise impact.
 
----
-
 ## Operating System & Base Setup
 
 I’m running a **Debian-based Linux distribution**.
@@ -39,8 +37,6 @@ Key choices:
 
 Keeping the OS minimal reduces attack surface and keeps maintenance simple.
 
----
-
 ## Containerization with Docker
 
 Everything runs inside **Docker containers**, managed via Docker Compose.
@@ -52,8 +48,6 @@ Why Docker?
 - Fast rollback if something breaks
 
 Each service lives in its own compose file with persistent volumes mapped to disk.
-
----
 
 ## Services I’m Running
 
@@ -83,8 +77,6 @@ Everything works **locally**, even if the internet goes down.
 
 If something breaks, I know *why*.
 
----
-
 ## Networking & Remote Access
 
 My ISP doesn’t provide a static IP, so I use:
@@ -93,8 +85,6 @@ My ISP doesn’t provide a static IP, so I use:
 - No exposed services without authentication
 
 Security always comes before convenience.
-
----
 
 ## Backups & Data Safety
 
@@ -106,8 +96,6 @@ My strategy:
 - Encrypted backups for sensitive data
 
 Rebuilding the server from scratch takes under an hour.
-
----
 
 ## What I Learned
 
@@ -121,8 +109,6 @@ This setup taught me more than most cloud tutorials ever could:
 
 Most importantly, it gave me **confidence**. I know exactly what’s running, where my data lives, and how to fix things when they break.
 
----
-
 ## What’s Next
 
 Planned upgrades:
@@ -132,8 +118,6 @@ Planned upgrades:
 - Power usage optimization
 
 This server isn’t “done”—it’s a living system.
-
----
 
 ## Final Thoughts
 
@@ -168,11 +152,10 @@ The system leverages:
 ## Performance
 
 Achieved 99.9% uptime with average task processing time under 100ms and automatic retry mechanisms for failed tasks.
-5:T86c,
+5:T865,
 Here's a journey of how we build a smart web crawler before FireCrawl/etc existed.
 
 ## Story Time
----
 
 (you may skip if you want)
 
@@ -200,7 +183,7 @@ But this didn't scaled well, because of the following reasons:
 
 
 ## Key Features
----
+
 - **98% Retrieval Precision**: Achieved industry-leading accuracy in document retrieval
 - **Automated Content Optimization**: ML-powered content enhancement and SEO optimization
 - **Scalable Architecture**: Handles millions of documents with sub-second query times
@@ -285,7 +268,7 @@ Shipped 5 major features and 5 smaller patches across 14 weeks:
 - [Morphing support](https://github.com/fury-gl/fury/pull/700)
 
 PBR implementation is still pending, but it will be really cool to see some development on the PBR sides.
-0:{"rsc":["$","$1","c",{"children":[["$","$L2",null,{"posts":[{"slug":"some-fancy-lights","title":"Extremely Fancy Lights (feat. WLED and HyperHDR)","excerpt":"Learning about self hosting, contol. access management and a computer networks","date":"May 2025","readTime":"5 min","tags":["Self Hosted","OSS","Linux","Debian","Docker","ESP"],"content":"\ntbd\n"},{"slug":"my-home-server-setup","title":"I Built a Home Server","excerpt":"Learning about self hosting, contol. access management and a computer networks","date":"Jan 2025","readTime":"8 min","tags":["Self Hosted","OSS","Linux","Debian","Docker","ESP"],"content":"$3"}],"projects":[{"slug":"distributed-task-processing","title":"Distributed Task Processing","description":"Scalable Celery-based task queue system handling 10k+ concurrent operations with Redis clustering and PostgreSQL optimization.","year":"2024","status":"Production","tech":["Python","Celery","Redis","PostgreSQL"],"content":"$4"},{"slug":"rag-content-system","title":"A smart web-scrapper?","description":"We built a smart (kinda) webscrapper with 98% recall accuracy on production.","year":"2024","status":"Edra Labs","tech":["Python","Vector DB","LangChain","FastAPI"],"content":"$5"},{"slug":"3d-renderer-enhancement","title":"glTF Integration for FURY","description":"Implemented comprehensive glTF 2.0 support for the FURY scientific visualization library including skeletal animations, morphing, and model import/export capabilities during Google Summer of Code 2022.","year":"2022","status":"Google Summer of Code","tech":["Python","OpenGL","glTF 2.0","VTK","Computer Graphics"],"content":"$6"}]}],["$L7"],"$L8"]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"7v0yTuIVd-_e4EOVzjp2F"}
-7:["$","script","script-0",{"src":"/_next/static/chunks/0158avlii_e8n.js","async":true}]
+0:{"rsc":["$","$1","c",{"children":[["$","$L2",null,{"posts":[{"slug":"some-fancy-lights","title":"Extremely Fancy Lights (feat. WLED and HyperHDR)","excerpt":"Learning about self hosting, contol. access management and a computer networks","date":"May 2025","readTime":"5 min","tags":["Self Hosted","OSS","Linux","Debian","Docker","ESP"],"content":"\ntbd\n"},{"slug":"my-home-server-setup","title":"I Built a Home Server","excerpt":"Learning about self hosting, contol. access management and a computer networks","date":"Jan 2025","readTime":"8 min","tags":["Self Hosted","OSS","Linux","Debian","Docker","ESP"],"content":"$3"}],"projects":[{"slug":"distributed-task-processing","title":"Distributed Task Processing","description":"Scalable Celery-based task queue system handling 10k+ concurrent operations with Redis clustering and PostgreSQL optimization.","year":"2024","status":"Production","tech":["Python","Celery","Redis","PostgreSQL"],"content":"$4"},{"slug":"rag-content-system","title":"A smart web-scrapper?","description":"We built a smart (kinda) webscrapper with 98% recall accuracy on production.","year":"2024","status":"Edra Labs","tech":["Python","Vector DB","LangChain","FastAPI"],"content":"$5"},{"slug":"3d-renderer-enhancement","title":"glTF Integration for FURY","description":"Implemented comprehensive glTF 2.0 support for the FURY scientific visualization library including skeletal animations, morphing, and model import/export capabilities during Google Summer of Code 2022.","year":"2022","status":"Google Summer of Code","tech":["Python","OpenGL","glTF 2.0","VTK","Computer Graphics"],"content":"$6"}]}],["$L7"],"$L8"]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"YwK_ZAvswfvY_MH69g4QB"}
+7:["$","script","script-0",{"src":"/_next/static/chunks/0d_wt7tpmr9md.js","async":true}]
 8:["$","$L9",null,{"children":["$","$a",null,{"name":"Next.MetadataOutlet","children":"$@b"}]}]
 b:null
