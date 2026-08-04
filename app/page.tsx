@@ -1,13 +1,6 @@
-import Link from "next/link"
-import { getAllPosts } from "../lib/posts"
-import { getAllProjects } from "../lib/projects"
-import ClientHome from "../components/client-home"
+import { getAllPosts, getAllProjects } from "../lib/content"
+import { Home } from "../components/home"
 
-export default function Home() {
-  const posts = getAllPosts()
-  const projects = getAllProjects()
-
-  return (
-    <ClientHome posts={posts} projects={projects} />
-  )
+export default function Page() {
+  return <Home posts={getAllPosts()} projects={getAllProjects()} />
 }

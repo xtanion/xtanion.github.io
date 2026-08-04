@@ -1,5 +1,6 @@
 import Link from "next/link"
 import type { ReactNode } from "react"
+import type { Heading } from "../lib/content"
 import { TableOfContents } from "./table-of-contents"
 import { SiteFooter } from "./site-footer"
 
@@ -10,7 +11,7 @@ interface ArticleShellProps {
   lead: string
   meta: string
   tags: string[]
-  headings: { id: string; text: string; level: number }[]
+  headings: Heading[]
   children: ReactNode
 }
 

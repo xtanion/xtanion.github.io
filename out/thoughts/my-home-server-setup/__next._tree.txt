@@ -1,3 +1,0 @@
-:HL["/_next/static/chunks/117ze4z.i.cs6.css","style"]
-:HC["/",""]
-0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"thoughts","param":null,"prefetchHints":0,"slots":{"children":{"name":"slug","param":{"type":"d","key":"my-home-server-setup","siblings":null},"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}}}},"staleTime":300,"buildId":"iZE1qc5zAiOLwib4FVkWJ"}

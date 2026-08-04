@@ -1,4 +1,0 @@
-:HL["/_next/static/chunks/117ze4z.i.cs6.css","style"]
-:HC["/",""]
-:HL["https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZnp1a2tjYXFpenN3MXUwN3VoODdpZnBtN3k1NDd1eTcxNTV4aGx0ZCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/d3mlE7uhX8KFgEmY/giphy.gif","image"]
-0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"thoughts","param":null,"prefetchHints":0,"slots":{"children":{"name":"slug","param":{"type":"d","key":"some-fancy-lights","siblings":null},"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}}}},"staleTime":300,"buildId":"iZE1qc5zAiOLwib4FVkWJ"}

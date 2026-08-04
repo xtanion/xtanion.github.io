@@ -1,13 +1,8 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Guide } from "./guide"
-
-interface Heading {
-  id: string
-  text: string
-  level: number
-}
+import type { Heading } from "../lib/content"
+import { Guide } from "./tree/guide"
 
 interface TableOfContentsProps {
   headings: Heading[]

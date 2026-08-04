@@ -1,14 +1,5 @@
 import type * as React from "react"
-
-function slugify(text: string): string {
-  return text
-    .toString()
-    .toLowerCase()
-    .trim()
-    .replace(/\s+/g, '-')
-    .replace(/[^\w\-]+/g, '')
-    .replace(/\-\-+/g, '-')
-}
+import { slugify } from "../lib/content"
 
 export const mdxComponents = {
   h2: (props: React.HTMLAttributes<HTMLHeadingElement>) => {

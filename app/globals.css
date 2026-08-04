@@ -1,5 +1,3 @@
-@import "tailwindcss";
-
 @import "@fontsource/commit-mono/400.css";
 @import "@fontsource/commit-mono/600.css";
 
@@ -54,69 +52,34 @@
   /* Prose only — chrome stays Commit Mono */
   --font-prose: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
   --max: 780px;
-
-  /* Compatibility bridge for any leftover Tailwind color utilities */
-  --background: var(--void);
-  --foreground: var(--text);
-  --card: var(--void);
-  --card-foreground: var(--text);
-  --popover: var(--void);
-  --popover-foreground: var(--text);
-  --primary: var(--light-green);
-  --primary-foreground: var(--void);
-  --secondary: var(--grid);
-  --secondary-foreground: var(--text);
-  --muted-foreground: var(--muted);
-  --accent: var(--grid);
-  --accent-foreground: var(--loud);
-  --destructive: var(--danger);
-  --destructive-foreground: var(--void);
-  --border: var(--line);
-  --input: var(--line);
-  --ring: var(--light-green);
-  --radius: 0px;
-}
-
-@theme inline {
-  --color-background: var(--void);
-  --color-foreground: var(--text);
-  --color-card: var(--void);
-  --color-card-foreground: var(--text);
-  --color-popover: var(--void);
-  --color-popover-foreground: var(--text);
-  --color-primary: var(--light-green);
-  --color-primary-foreground: var(--void);
-  --color-secondary: var(--grid);
-  --color-secondary-foreground: var(--text);
-  --color-muted: var(--grid);
-  --color-muted-foreground: var(--muted);
-  --color-accent: var(--grid);
-  --color-accent-foreground: var(--loud);
-  --color-destructive: var(--danger);
-  --color-border: var(--line);
-  --color-input: var(--line);
-  --color-ring: var(--light-green);
-  --color-void: var(--void);
-  --color-text: var(--text);
-  --color-loud: var(--loud);
-  --color-green: var(--green);
-  --color-light-green: var(--light-green);
-  --font-mono: var(--font);
-  --font-sans: var(--font);
-  --radius-sm: 0px;
-  --radius-md: 0px;
-  --radius-lg: 0px;
-  --radius-xl: 0px;
 }
 
 /* --------------------------------------------------------------------------
    Base
    -------------------------------------------------------------------------- */
 
-* {
+/* Minimal reset — replaces tailwind preflight, which used to zero these */
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   border-color: var(--line);
 }
+
+body,
+h1, h2, h3, h4, h5, h6,
+p, figure, blockquote, dl, dd,
+ul, ol, pre {
+  margin: 0;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+img, svg { max-width: 100%; }
 
 html {
   scroll-behavior: smooth;
@@ -288,7 +251,7 @@ a { color: inherit; text-decoration: none; }
 .md a { color: var(--light-green); text-decoration: underline; text-underline-offset: 3px; }
 .md a:hover { color: var(--green); }
 .md strong { color: var(--loud); font-weight: 600; }
-.md ul, .md ol { padding-left: 20px; }
+.md ul, .md ol { padding-left: 22px; }
 .md ul { list-style: disc; }
 .md ol { list-style: decimal; }
 .md li { margin-top: 4px; }

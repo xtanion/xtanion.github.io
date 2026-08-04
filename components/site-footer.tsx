@@ -1,8 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-
-const REPO = "github.com/xtanion/portfolio"
+import { REPO } from "../lib/site"
 
 const clock = new Intl.DateTimeFormat("en-GB", {
   timeZone: "Asia/Kolkata",
