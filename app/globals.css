@@ -3,33 +3,12 @@
 @import "@fontsource/commit-mono/400.css";
 @import "@fontsource/commit-mono/600.css";
 
-/* Drafting Mono — typewriter monospace, prose only. SIL OFL, see app/fonts/LICENSE.md */
+/* Space Grotesk — prose only. SIL OFL, see app/fonts/LICENSE.md */
 @font-face {
-  font-family: 'Drafting Mono';
-  src: url('./fonts/DraftingMono-Regular.woff2') format('woff2');
-  font-weight: 400;
+  font-family: 'Space Grotesk';
+  src: url('./fonts/SpaceGrotesk-Variable.woff2') format('woff2-variations');
+  font-weight: 300 700;
   font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Drafting Mono';
-  src: url('./fonts/DraftingMono-Italic.woff2') format('woff2');
-  font-weight: 400;
-  font-style: italic;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Drafting Mono';
-  src: url('./fonts/DraftingMono-SemiBold.woff2') format('woff2');
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Drafting Mono';
-  src: url('./fonts/DraftingMono-SemiBoldItalic.woff2') format('woff2');
-  font-weight: 600;
-  font-style: italic;
   font-display: swap;
 }
 
@@ -56,7 +35,6 @@
   --green: #0ae448;
   --light-green: #abff84;
   --grad-green: linear-gradient(114.41deg, #0ae448 20.74%, #abff84 65.5%);
-  --green-soft: #cdffb8;   /* section headings — lighter than the accent */
 
   /* Destructive — the only warm color */
   --danger: #c77a74;
@@ -74,7 +52,7 @@
   --font: 'Commit Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   --font-mono: var(--font);
   /* Prose only — chrome stays Commit Mono */
-  --font-prose: 'Drafting Mono', var(--font);
+  --font-prose: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
   --max: 780px;
 
   /* Compatibility bridge for any leftover Tailwind color utilities */
@@ -226,16 +204,15 @@ a { color: inherit; text-decoration: none; }
 .art-head { margin-bottom: 40px; }
 .art-title {
   font-family: var(--font-prose);
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 600;
-  line-height: 1.3;
+  line-height: 1.25;
   color: var(--loud);
-  text-transform: lowercase;
 }
 .art-lead {
   font-family: var(--font-prose);
-  font-size: 15px;
-  max-width: 62ch;
+  font-size: 16px;
+  max-width: 58ch;
   margin-top: 6px;
   color: var(--muted);
 }
@@ -280,30 +257,28 @@ a { color: inherit; text-decoration: none; }
 
 .md {
   font-family: var(--font-prose);
-  font-size: 15px;
-  line-height: 1.65;
+  font-size: 16px;
+  line-height: 1.7;
   color: var(--text);
-  max-width: 66ch;
+  max-width: 68ch;
 }
 .md > * + * { margin-top: 16px; }
-/* Sections read by color: green h1/h2 > loud h3 > body text.
-   Separator rules come only from an authored `---` in the mdx, never from h2. */
+/* Prose headings keep their authored case and stay monochrome — size and
+   weight carry the hierarchy. Rules come only from an authored `---`. */
 .md h1,
 .md h2 {
-  font-size: 16px;
+  font-size: 19px;
   font-weight: 600;
   line-height: 1.4;
-  color: var(--green-soft);
-  text-transform: lowercase;
+  color: var(--loud);
   margin-top: 36px;
   margin-bottom: 8px;
   scroll-margin-top: 32px;
 }
 .md h3 {
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 600;
   color: var(--loud);
-  text-transform: lowercase;
   margin-top: 26px;
   margin-bottom: 2px;
   scroll-margin-top: 32px;
@@ -319,7 +294,7 @@ a { color: inherit; text-decoration: none; }
 .md li { margin-top: 4px; }
 .md li::marker { color: var(--muted); }
 .md code {
-  font-size: 13px;
+  font-size: 14px;
   font-family: var(--font);
   background: #171717;
   padding: 1px 5px;
@@ -333,7 +308,7 @@ a { color: inherit; text-decoration: none; }
   border-radius: 0;
   padding: 16px;
   overflow-x: auto;
-  font-size: 13px;
+  font-size: 14px;
   line-height: 1.6;
 }
 .md pre code { background: transparent; padding: 0; color: var(--text); }

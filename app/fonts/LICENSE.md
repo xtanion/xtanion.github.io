@@ -1,5 +1,9 @@
-Copyright 2021 The Drafting Mono Project Authors
-(https://github.com/indestructible-type/Drafting)
+Fonts bundled here are licensed under the SIL Open Font License 1.1.
+
+- Space Grotesk — Copyright 2020 Florian Karsten (https://github.com/floriankarsten/space-grotesk)
+
+Full licence text follows.
+
 
 This Font Software is licensed under the SIL Open Font License, Version 1.1. This license is available with a FAQ at: https://scripts.sil.org/OFL
 
