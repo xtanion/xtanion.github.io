@@ -1,6 +1,6 @@
 Fonts bundled here are licensed under the SIL Open Font License 1.1.
 
-- Space Grotesk — Copyright 2020 Florian Karsten (https://github.com/floriankarsten/space-grotesk)
+- IBM Plex Sans — Copyright 2017 IBM Corp. (https://github.com/IBM/plex)
 
 Full licence text follows.
 
