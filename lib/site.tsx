@@ -12,6 +12,8 @@ export type TreeLeaf = {
   external?: boolean
   /* an element, not a component — functions can't cross the server boundary */
   icon?: ReactNode
+  /* secondary rows (see-all, counts) sit back at muted */
+  dim?: boolean
 }
 
 export type TreeNode = {

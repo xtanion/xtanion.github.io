@@ -16,7 +16,7 @@ export function TreeLeaf({ leaf, stem, last }: TreeLeafProps) {
       {stem && <Guide kind={stem} />}
       <Guide kind={last ? "end" : "tee"} />
       {leaf.icon}
-      <span className="tree-name">{leaf.label}</span>
+      <span className={`tree-name${leaf.dim ? " dim" : ""}`}>{leaf.label}</span>
       <span className="tree-right">{leaf.meta && <span className="tree-meta tnum">{leaf.meta}</span>}</span>
     </>
   )

@@ -402,6 +402,7 @@ a { color: inherit; text-decoration: none; }
 }
 
 .tree-root .tree-name { color: var(--loud); }
+.tree-name.dim { color: var(--muted); }
 
 @keyframes tree-blink {
   0%, 50% { opacity: 1; }
