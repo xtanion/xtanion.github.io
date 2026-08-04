@@ -1,4 +1,4 @@
-import { CONTACT, EXPERIENCE, WHOAMI, type TreeNode } from "../lib/site"
+import { CONTACT, EXPERIENCE, WHOAMI, type TreeLeaf, type TreeNode } from "../lib/site"
 import type { Post, Project } from "../lib/content"
 import { SiteFooter } from "./site-footer"
 import { Tree } from "./tree/tree"
@@ -6,6 +6,14 @@ import { Tree } from "./tree/tree"
 interface HomeProps {
   posts: Post[]
   projects: Project[]
+}
+
+/* The index shows the most recent few; the rest live on the listing page. */
+const INLINE = 5
+
+function withOverflow(leaves: TreeLeaf[], total: number, href: string): TreeLeaf[] {
+  if (total <= INLINE) return leaves
+  return [...leaves, { key: "all", label: "see all", meta: `${total} total`, href }]
 }
 
 export function Home({ posts, projects }: HomeProps) {
@@ -23,27 +31,35 @@ export function Home({ posts, projects }: HomeProps) {
     {
       id: "proj",
       label: "proj",
-      leaves: projects.map((project) => ({
-        key: project.slug,
-        label: project.title,
-        meta: project.year,
-        href: `/projects/${project.slug}`,
-      })),
+      leaves: withOverflow(
+        projects.slice(0, INLINE).map((project) => ({
+          key: project.slug,
+          label: project.title,
+          meta: project.year,
+          href: `/projects/${project.slug}`,
+        })),
+        projects.length,
+        "/projects",
+      ),
     },
     {
       id: "blogs",
       label: "blogs",
-      leaves: posts.map((post) => ({
-        key: post.slug,
-        label: post.title,
-        meta: (
-          <>
-            {post.date}
-            <span className="tree-meta-long"> · {post.readTime}</span>
-          </>
-        ),
-        href: `/thoughts/${post.slug}`,
-      })),
+      leaves: withOverflow(
+        posts.slice(0, INLINE).map((post) => ({
+          key: post.slug,
+          label: post.title,
+          meta: (
+            <>
+              {post.date}
+              <span className="tree-meta-long"> · {post.readTime}</span>
+            </>
+          ),
+          href: `/thoughts/${post.slug}`,
+        })),
+        posts.length,
+        "/thoughts",
+      ),
     },
     { id: "contact", label: "contact", leaves: CONTACT },
   ]

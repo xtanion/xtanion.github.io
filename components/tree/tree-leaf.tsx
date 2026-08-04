@@ -4,15 +4,16 @@ import { Guide } from "./guide"
 
 interface TreeLeafProps {
   leaf: Leaf
-  /** the parent's column: a continuing stem, or blank when it is the last node */
-  stem: "line" | "blank"
+  /** the parent's column: a continuing stem, or blank when it is the last node.
+      Omitted at depth one, where the leaf hangs straight off the root. */
+  stem?: "line" | "blank"
   last: boolean
 }
 
 export function TreeLeaf({ leaf, stem, last }: TreeLeafProps) {
   const body = (
     <>
-      <Guide kind={stem} />
+      {stem && <Guide kind={stem} />}
       <Guide kind={last ? "end" : "tee"} />
       {leaf.icon}
       <span className="tree-name">{leaf.label}</span>

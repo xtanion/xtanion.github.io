@@ -26,7 +26,7 @@ export function ArticleShell({ section, slug, title, lead, meta, tags, headings,
             root
           </Link>
           <span className="art-sep">/</span>
-          <Link href="/" className="art-crumb">
+          <Link href={section === "blogs" ? "/thoughts" : "/projects"} className="art-crumb">
             {section}
           </Link>
           <span className="art-sep">/</span>
