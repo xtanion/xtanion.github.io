@@ -1,51 +1,65 @@
 ---
-title: "A smart web-scrapper?"
-description: "We built a smart (kinda) webscrapper with 98% recall accuracy on production."
+title: "A smart web-scraper?"
+description: "We built a smart (kinda) web scraper before FireCrawl existed. Ended up at 98% top-k retrieval precision on domain queries."
 year: "2024"
 status: "Edra Labs"
-tech: ["Python", "Vector DB", "LangChain", "FastAPI"]
+tech: ["Python", "Qdrant", "LangChain", "Celery", "AWS ECS", "FastAPI"]
 ---
 
-Here's a journey of how we build a smart web crawler before FireCrawl/etc existed.
+Here's a journey of how we built a smart web crawler before FireCrawl/etc existed.
 
 ## Story Time
 
 (you may skip if you want)
 
-Our task of building a smart web scrapper began when we tried to make a web srapper for web-archive/internet-archive. As you know, web archive is a corpus of massive snapshots of evey websites possible for the past 20 years.
+Our task of building a smart web scraper began when we tried to make one for web-archive/internet-archive. As you know, web archive is a corpus of massive snapshots of every website possible for the past 20 years.
 
-Initial implementation used scrapy (python) package to write custom webscrappers...but this got tedious too soon. We (team of 2) started to look out for better solutions.
+The initial implementation used scrapy (python) to write custom scrapers, but this got tedious too soon. Every site needed its own selectors, and every site redesign broke them. We (team of 2) started to look out for better solutions.
 
 ### Phase 1
 
-**Enter, the AI based scrapper**. This is where it all began, we realised that we can parse HTML pages as it is, convert the content to markdown and with the help of LLMs it's quite easy to classify each section. Parsing HTML to md wasn't very difficult either. This worked great for the PoC.
+**Enter, the AI based scraper**. This is where it all began. We realised that we can parse HTML pages as they are, convert the content to markdown, and with the help of LLMs it's quite easy to classify each section. Parsing HTML to md wasn't very difficult either. This worked great for the PoC.
 
-But this didn't scaled well, because of the following reasons:
+But this didn't scale well, because of the following reasons:
 
-1. Markdown conversion was lossy, critical DOM structure, hierarchy, and semantic context are discarded during conversion.
+1. Markdown conversion was lossy. Critical DOM structure, hierarchy, and semantic context are discarded during conversion.
 2. Boilerplate content overwhelms signal, causing navigation, footers, and legal text to be misclassified as meaningful sections.
 3. Section boundaries become ambiguous, forcing the LLM to guess structural intent from flattened text.
-4. Images, pdfs and js-rendered content is often incomplete or missing, leading to inconsistent or partial extractions.
+4. Images, pdfs and js-rendered content are often incomplete or missing, leading to inconsistent or partial extractions.
 5. Token usage scales poorly, as markdown inflates content size and forces aggressive chunking.
 6. Expensive AF!
 
+Reason 6 was the one that actually killed it. The others were quality problems we could have lived with for a while. Sending every page through an LLM at full length is a cost curve that goes the wrong way the moment you succeed.
 
 ### Phase 2
 
-**RAG Approach** - 
+**RAG Approach.**
 
+The realisation was that we were using the LLM as a parser when we should have been using it as a judge. Parsing is cheap and deterministic if you keep the structure. Judgement is what you actually want to pay per-token for.
 
-## Key Features
+So the pipeline got split into stages, and the expensive stage got as small as we could make it:
 
-- **98% Retrieval Precision**: Achieved industry-leading accuracy in document retrieval
-- **Automated Content Optimization**: ML-powered content enhancement and SEO optimization
-- **Scalable Architecture**: Handles millions of documents with sub-second query times
-- **Vector Database Integration**: Efficient semantic search using state-of-the-art embeddings
+1. **Discovery.** Figure out which pages are even worth extracting from. Most of a crawl is pagination, tag pages, and near-duplicates of something you already have.
+2. **Structured extraction.** Only on pages that survived discovery, and against the DOM rather than a flattened markdown blob, so hierarchy survives to the point where it can inform chunking.
 
-## Technical Stack
+**Semantic chunking** replaced fixed-size splitting. Fixed-size chunking cuts at whatever character count you picked, which routinely splits a definition from its explanation, or glues the end of one section onto the start of the next. Both failures are invisible at index time and only show up as bad retrieval later, which makes them miserable to debug. Chunking on semantic boundaries instead means a chunk is a coherent unit, so when it comes back from a search it carries enough context to actually answer with.
 
-Python, LangChain, Redis Queues (Yes, This exists), Qdrant (Open-source Vector DB)
+This is where reason 1 from Phase 1 comes back around. Keeping the DOM meant we still had the hierarchy to chunk against, instead of guessing at boundaries in flattened text.
 
-## Impact
+**DBSCAN clustering** built the knowledge base out of crawled content. The reason it's DBSCAN and not k-means is that k-means makes you pick k upfront, and you do not know how many distinct topics are in a crawl before you crawl it. DBSCAN figures out cluster count from density instead.
 
-Deployed to production serving thousands of daily queries with consistent sub-second response times and 98% user satisfaction rate.
+The more useful property is that DBSCAN has a concept of noise. Points that belong to no cluster get labelled as such rather than being forced into the nearest one. On crawled content that noise label is doing real work, because boilerplate, navigation chrome, and one-off pages get dropped instead of quietly contaminating a cluster. That's Phase 1's reason 2 solved as a side effect of the clustering choice rather than as a filtering step we had to write.
+
+Retrieval ran on **Qdrant**.
+
+## Scaling It
+
+The crawler ran as **Celery workers on AWS ECS**, sustaining **1,000+ req/min** across **25+ product categories**.
+
+Crawling is close to the ideal Celery workload, since every page is independent, failure is routine rather than exceptional, and you want retries with backoff without writing that logic yourself. The multi-stage pipeline maps onto this cleanly too: discovery and extraction are separate task types with very different cost profiles, so they can be queued and scaled separately instead of being one monolithic job that holds a worker hostage while it waits on an LLM.
+
+## Results
+
+98% top-k retrieval precision on domain queries.
+
+The number that mattered more to the business: onboarding a new product category went from roughly **6 months to 3 weeks**. The old path was a human writing selectors per site and babysitting them. The new path was pointing the pipeline at a category and reviewing what came out. That is the entire argument for the whole project, and it is a much better one than any accuracy metric.
