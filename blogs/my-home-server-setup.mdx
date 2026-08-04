@@ -1,123 +1,127 @@
 ---
 title: "I Built a Home Server"
-excerpt: "Learning about self hosting, contol. access management and a computer networks"
+excerpt: "Learning about self hosting, control, access management and computer networks"
 date: "Jan 2025"
 readTime: "8 min"
 tags: ["Self Hosted", "OSS", "Linux", "Debian", "Docker", "ESP"]
 ---
 
-Over the last few months, I’ve been gradually building a **home server** that I actually *use* every day. Why? You may ask, basically to be free of the usual internet (and also because Gilfoyle from silicon valley conviced me to build my own Anton).
+Over the last few months, I've been gradually building a **home server** that I actually *use* every day. Why? You may ask, basically to be free of the usual internet (and also because Gilfoyle from silicon valley conviced me to build my own Anton).
 
-This blog walks through **why I built it, what I’m running, and how everything fits together**.
+![Gilfoyle at his desk in Silicon Valley, captioned: "To get rid of all the bugs was to get rid of all the software. Which is technically and statistically correct."](/gilf.png)
+
+*The man who radicalised me. I have taken the opposite lesson and added more software.*
+
+This blog walks through **why I built it, what I'm running, and how everything fits together**.
 
 
 ## Why I Built a Home Server
 
-As a backend engineer, I wanted more than just a VPS:
+As a backend engineer, a VPS was never quite the thing I wanted. A VPS gives you a shell and a bill; it doesn't give you the machine. On AWS or GCP the interesting parts, the disk, the NIC, the router in front of it, are all abstracted away behind a console, and when something breaks you file a ticket instead of learning something. I wanted the layer underneath: full control over the infrastructure, and a place where I could break things without a billing alert as punishment.
 
-- Full **control over infrastructure** (while AWS and GCP are good, all the internal workings are kinda abstracted)
-- A place to **experiment safely** ()
-- A deeper understanding of **networking, Linux, Docker, and automation**
-- Most importantly, A Media Server (I was soo tired of having multiple streaming platforms just not having the content I wanna watch!)
+It also turned out to be the fastest way to actually learn networking, Linux, Docker and automation. Not tutorial-learning, where you copy commands into a terminal and everything works. The kind where DNS is broken at 1 AM and nobody is going to fix it for you. There are two hard problems in computer science: cache invalidation, naming things, and off-by-one errors. I have now personally met all three, in my own home.
+
+And most importantly: a media server. I was so tired of paying for four streaming platforms that between them still didn't have the thing I wanted to watch that night.
 
 
 ## Hardware
 
-A beat up lenovo ideapad that I got in my first year of college for less than 60,000 INR (~650$)
+The whole thing runs on a beat up **2018 Lenovo IdeaPad 5** that I bought in my first year of college for under 60,000 INR (~$650). It has 8GB of RAM, soldered, which I found out the hard way when I went looking for an upgrade slot and found none. There is also a 512GB SSD, which is the only component that has never disappointed me.
 
-This runs 24/7 without noticeable power or fan noise.
+That sounds thin for a server, and it is, but a laptop makes a surprisingly good one. It has a built-in UPS (the battery), it idles at a few watts, it's silent, and the lid closes so it lives on a shelf instead of taking up desk space. I did have to tell systemd to ignore the lid switch, otherwise closing it suspends the machine and takes every service down with it. My server kept going to sleep on the job. Relatable, but not acceptable. One line in `/etc/systemd/logind.conf` fixed it:
+
+```
+HandleLidSwitch=ignore
+```
+
+The 8GB is the real constraint and it shapes everything below: no VMs, no Kubernetes, no service that idles at a gigabyte. Everything is a container, and containers that aren't earning their memory get deleted. It's been running 24/7 since, without noticeable heat, fan noise or a meaningful dent in the power bill. It has now been up longer than most of my personal projects, my gym memberships, and one relationship.
+
 
 ## Operating System & Base Setup
 
-I’m running a **Debian 12** server.
+I'm running **Debian 12**, chosen mostly because it's boring. Stable packages, a long support window, and nothing that surprises me during an update. Debian is the friend who never texts first but also never lets you down.
 
-Key choices:
-- No desktop environment
-- SSH-only access
-- Firewall enabled
-- Automatic security updates
-- Custom SSH port + key-based login only
+The base setup came down to five things, roughly in this order:
 
-Keeping the OS minimal reduces attack surface and keeps maintenance simple.
+1. **No desktop environment.** A netinstall with only the standard system utilities. Nothing is rendering a login screen to an empty room, and it saves a few hundred MB of RAM I don't have to spare.
+2. **Key-based SSH on a non-default port.** Password login disabled entirely in `sshd_config`. The port change isn't real security, it just cuts the log noise from bots hammering port 22 down to almost nothing. Security through obscurity is not security, but it is very good at reducing scroll.
+3. **Firewall enabled, default deny.** Only SSH and the reverse proxy's ports are open inbound. Everything else is reachable only from inside the network or over the tunnel. The firewall's policy on strangers is the same as mine.
+4. **Automatic security updates** via `unattended-upgrades`, restricted to the security repo so a package upgrade never quietly changes behaviour on me.
+5. **fail2ban** watching the SSH log, because the handful of bots that do find the new port may as well be banned. It has banned more IPs this year than I have made friends. I'm choosing not to think about that ratio.
+
+Keeping the OS minimal reduces the attack surface and, more practically, means there's very little on the machine I have to reason about when something goes wrong. The interesting state lives in containers, not in the host.
+
 
 ## Containerization with Docker
 
-Everything runs inside **Docker containers**, managed via Docker Compose.
+Everything runs inside **Docker containers**, managed with Docker Compose. Each service gets its own compose file and its own directory, with persistent volumes bind-mounted to a known path on disk, so config and data are always somewhere I can point a backup at.
 
-Why Docker?
-- Clean isolation
-- Easy upgrades
-- Reproducible setup
-- Fast rollback if something breaks
+Docker earns its place here for four reasons. Isolation, so a badly behaved service can't drag the host down with it. Upgrades that are a `pull` and a `up -d` instead of a dependency negotiation with apt. Reproducibility, since the compose file *is* the documentation for how a service is configured. And rollback: if a new image breaks something, pinning the old tag and restarting takes about fifteen seconds. That's faster than I can say "it worked on my machine", which is convenient, because it is my machine.
 
-Each service lives in its own compose file with persistent volumes mapped to disk.
+The tradeoff on 8GB is that container overhead is real, so I keep a hard rule: one service per container, no service running "just in case".
 
-## Services I’m Running
+
+## Services I'm Running
 
 ### 1. Reverse Proxy & SSL
-All services are routed through a reverse proxy:
-- Automatic HTTPS
-- One public IP, many services
-- Clean subdomain-based routing
+
+Everything sits behind a single reverse proxy. It terminates TLS with automatic certificate renewal, so I've never manually touched a certificate, and it routes by subdomain, one public entry point fanning out to a dozen internal services, each on its own hostname instead of a port number I'd have to remember. I used to remember the port numbers. That was my whole personality for a month.
 
 ### 2. Home Automation
-I run Home Assistant on a docker container,  this controls all my lights, wled, matter devices. I have fallen in love with home assistant and now wanna buy more smart devices to add to my dashbord.
+
+Home Assistant runs in a container and controls all my lights, WLED strips and Matter devices. I have fallen in love with it, to the point where I now buy smart devices mostly so I have something new to put on the dashboard. I automated the lights so I'd never touch a switch again, and then spent six hours on my phone touching a picture of a switch.
+
+The ESP-based bits I flashed myself, which is how this project quietly turned into a hardware hobby as well.
 
 ### 3. Media
 
-The idea of owing your own media? hell yeah! Hence the second thing I installed on my server is Jellyfin and *arr services (again, everything on docker). A qbittorrent client (ofc to find/read books). The app i love the most now a days is called [Seer](https://github.com/seerr-team/seerr)...I will attach screenshots below.
+The idea of owning your own media? Hell yeah. So the second thing I installed was Jellyfin, along with the *arr services and a qBittorrent client (for finding and reading books, obviously), all on Docker. Jellyfin does have to transcode on an ageing laptop CPU, which it is not thrilled about, so I keep direct-play formats where I can and let the rest take its time. The CPU and I have an understanding: I don't ask it to do 4K, and it doesn't ask me for a new laptop.
+
+The app I love most these days is [Seer](https://github.com/seerr-team/seerr). It gives everyone else in the house a request button instead of a message to me. I built an entire media platform to avoid a conversation, which I consider a good trade. Screenshots below.
 
 ### 4. Monitoring & Logs
-- System metrics (CPU, memory, disk)
-- Container health checks
-- Logs centralized for debugging
 
-If something breaks, I know *why*.
+The monitoring stack tracks system metrics (CPU, memory, disk), runs health checks on each container, and centralizes logs in one place so debugging doesn't mean SSH-ing around and reading four different files. On a machine with 8GB, the memory graph is the one I actually watch. It's the first thing to tell me a new service was a bad idea. If something breaks, I know *why*, which is a genuine upgrade over my previous approach of knowing *that*.
+
 
 ## Networking & Remote Access
 
-My ISP doesn’t provide a static IP, so I use:
-- Dynamic DNS
-- Reverse tunneling for secure access
-- No exposed services without authentication
+My ISP doesn't hand out static IPs, and like most home connections here it's behind CGNAT, so port forwarding was never going to work. I learned what CGNAT was at roughly the same moment I learned it was my problem. Dynamic DNS keeps a hostname pointed at whatever address I currently have, and a reverse tunnel handles access from outside the network. The server dials out to a small public endpoint and traffic comes back down that connection, which sidesteps the inbound problem entirely.
 
-Security always comes before convenience.
+Nothing is exposed without authentication in front of it. Security comes before convenience, which occasionally means logging in twice to check whether a download finished. Worth it.
+
 
 ## Backups & Data Safety
 
-One rule: **assume the disk will fail**.
+One rule: **assume the disk will fail**. It's a seven-year-old SSD in a laptop that never turns off, so this isn't paranoia so much as arithmetic.
 
-My strategy:
-- Nightly backups to a secondary drive
-- Configuration files version-controlled
-- Encrypted backups for sensitive data
+Nightly jobs copy everything to a secondary drive, all configuration and compose files are version-controlled in a git repo, and anything sensitive is encrypted before it's written to the backup. The media library is deliberately excluded, because it's large and it's replaceable. It also can't hurt my feelings.
 
-Rebuilding the server from scratch takes under an hour.
+The point of all this isn't the backups themselves, it's the restore. A backup you have never restored is not a backup, it's a hobby. I've timed mine: rebuilding the server from a blank Debian install takes under an hour, most of which is spent waiting on downloads.
+
 
 ## What I Learned
 
-This setup taught me more than most cloud tutorials ever could:
+This setup taught me more than most cloud tutorials ever could. Linux internals, because there's no managed service to hide them. Real networking: NAT, DNS, ports, and why CGNAT ruined my first weekend of plans. Docker, past the point of copying compose files off the internet. And security tradeoffs, which mostly means learning that every convenience you add is a door you have to think about.
 
-- Linux internals
-- Real networking (NAT, DNS, ports)
-- Docker
-- Security tradeoffs
+It's always DNS. I want to be clear that I did not believe this before. I believe it now. I believe it the way people believe things after an incident.
 
-Most importantly, it gave me **confidence**. I know exactly what’s running, where my data lives, and how to fix things when they break.
+Most importantly, it gave me **confidence**. I know exactly what's running, where my data lives, and how to fix things when they break.
 
-## What’s Next
 
-Planned upgrades:
-- LLM inference (Mostly LlamaIndex)
-- Smarter monitoring & alerting
-- Power usage optimization
-- Host this website on my home server (maybe)
+## What's Next
 
-This server isn’t “done”—it’s a living system.
+1. **LLM inference**, mostly LlamaIndex, though 8GB of shared RAM means small models only, which is its own kind of interesting constraint. The model and I will both be doing our best with limited context.
+2. **Smarter monitoring and alerting**, so the server tells me something is wrong before I notice it myself.
+3. **Power usage optimization**, measuring it properly first, since right now I'm guessing.
+4. **Hosting this website on it**, maybe. If this page is loading slowly, congratulations, I did it.
+
+This server isn't "done", it's a living system.
+
 
 ## Final Thoughts
 
-A home server isn’t about replacing the cloud.  
-It’s about **understanding it**.
+A home server isn't about replacing the cloud.
+It's about **understanding it**.
 
-If you’re a developer who enjoys building systems end-to-end, I highly recommend setting one up. Start small. Break things. Learn fast.
+If you're a developer who enjoys building systems end-to-end, I highly recommend setting one up. Start small. Break things. Learn fast. Then explain to whoever you live with why the internet went down again.
