@@ -46,6 +46,8 @@ So the pipeline got split into stages, and the expensive stage got as small as w
 
 This is where reason 1 from Phase 1 comes back around. Keeping the DOM meant we still had the hierarchy to chunk against, instead of guessing at boundaries in flattened text.
 
+![Phase 1 sends every HTML page through markdown flattening and then an LLM that classifies every section, which is lossy, lets boilerplate outweigh signal, and is expensive. Phase 2 keeps the DOM, adds a cheap discovery step that decides whether a page is worth extracting, then structured extraction, semantic chunking, DBSCAN clustering whose noise label drops boilerplate for free, and finally Qdrant](/diagrams/crawler-phases.svg)
+
 **DBSCAN clustering** built the knowledge base out of crawled content. The reason it's DBSCAN and not k-means is that k-means makes you pick k upfront, and you do not know how many distinct topics are in a crawl before you crawl it. DBSCAN figures out cluster count from density instead.
 
 The more useful property is that DBSCAN has a concept of noise. Points that belong to no cluster get labelled as such rather than being forced into the nearest one. On crawled content that noise label is doing real work, because boilerplate, navigation chrome, and one-off pages get dropped instead of quietly contaminating a cluster. That's Phase 1's reason 2 solved as a side effect of the clustering choice rather than as a filtering step we had to write.

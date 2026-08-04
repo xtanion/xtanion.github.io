@@ -1,0 +1,18 @@
+{
+  "name": "diagram-studio",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite"
+  },
+  "dependencies": {
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "tldraw": "5.2.5"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "latest",
+    "playwright": "^1.62.1",
+    "vite": "latest"
+  }
+}

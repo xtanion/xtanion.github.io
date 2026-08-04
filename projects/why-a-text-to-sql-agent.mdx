@@ -1,0 +1,156 @@
+---
+title: "Why a Text-to-SQL Agent?"
+description: "A CDC pipeline and a reporting agent over financial data. Why change data capture instead of a nightly batch, why the database does the arithmetic, and why coverage is not correctness."
+year: "2026"
+status: "Kodo"
+tech: ["Python", "Debezium", "Kafka", "PostgreSQL", "LangGraph"]
+---
+
+# Why a Text-to-SQL Agent?
+
+Someone in finance was spending about eight hours a week writing the same shapes of SQL by hand, or asking an engineer to write them. Not the same query. The same *shape* of query, with a different vendor or a different quarter each time.
+
+That's the specific situation a dashboard cannot fix. A dashboard answers the questions you thought of in advance. It has nothing for "payables for this vendor, this quarter, excluding cancelled," which is what actually eats the eight hours.
+
+So: not AI for finance. Deleting a chore that happened to be a translation problem.
+
+There are two systems here. A change data capture pipeline that turns transactional data into something an LLM can query, and a reporting agent on top of it. The second only works because of choices made in the first.
+
+![Change data capture pipeline: Postgres write-ahead log, through logical decoding on a replication slot, into Debezium at roughly 100k change events per day, onto an at-least-once broker, through a consumer with an LSN guard, into denormalized tables that the reporting agent queries](/diagrams/cdc-pipeline.svg)
+
+---
+
+## Part 1: Why change data capture
+
+The agent needs data. The obvious way to get it is a nightly job that dumps production into a warehouse, and that approach is genuinely good.
+
+A batch dump is idempotent by construction. If it fails, you rerun it. No offset state to corrupt, no consumer group to rebalance, no replication slot quietly filling your disk at 3am. The failure mode is "the job didn't run," which is loud.
+
+We used CDC anyway, for exactly one reason: freshness. Someone asking "what are our payables this week" means this week, not as of last night. Once the answer can change between when the pipeline ran and when the question was asked, batch is done.
+
+That's the whole trade. Freshness for a permanently running system with real failure modes. If the requirement had been "an hour stale is fine," I'd have written a cron job and gone home.
+
+### How CDC works
+
+Change data capture reads the write-ahead log and emits an event for every insert, update, and delete. Because the WAL is what the database already uses for durability, you get every change without polling and without touching the query path.
+
+For Postgres, Debezium doesn't read the raw WAL. It goes through logical decoding via a replication slot, which turns physical WAL records into row-level changes. That distinction matters at 3am: a replication slot holds WAL on the primary until the consumer confirms it read them. If your consumer dies quietly, the WAL grows until the disk fills. The mechanism that makes CDC reliable is the same one that can take down your primary.
+
+### Delivery is at-least-once
+
+On a restart, a network blip, or a rebalance, you get the same event twice. In financial data that's a payable counted twice.
+
+The fix is easy. Declare a unique key per table, upsert instead of insert, and processing an event twice becomes a no-op.
+
+That handles duplicates. Ordering is the one that hurts.
+
+### The bug that throws no exception
+
+![A balance moving 100 to 200 to 300 as events e1, e2, e3 with LSN 1001 to 1003. Event e2 is redelivered after e3. Upserting by key alone writes 200 over 300 with no exception and no alert, leaving the row silently stale. Upserting with the LSN guard compares stored 1003 against incoming 1002, updates zero rows, and 300 survives](/diagrams/ordering-bug.svg)
+
+A balance goes 100, 200, 300. Event two gets redelivered after event three already landed. You upsert by key, see the older event, and write 200 over the 300.
+
+Nothing crashes. No exception, no dead letter queue, no alert. The row is just wrong, and stays wrong until that row happens to change again. Meanwhile the agent reads it and reports a balance that was true twenty minutes ago.
+
+So make the write conditional on the incoming event being newer. My first instinct was to compare `updated_at`, which is the right idea with the wrong clock. `updated_at` is application data. It's trustworthy only if every write path sets it correctly on every table forever, which lasts right up until someone runs a manual UPDATE in production.
+
+Use the log sequence number instead. Debezium puts it in every event's `source` block, it's the position in the WAL where the change committed, and it's monotonic by definition. Later commit, higher LSN, no matter what your application wrote into any column.
+
+```sql
+UPDATE flat_table
+SET ..., _lsn = :incoming_lsn
+WHERE key = :key
+  AND _lsn < :incoming_lsn;
+```
+
+Stale replays hit the guard and do nothing.
+
+We also shipped without handling deletes, then found rows sitting in the flat tables after being removed upstream. The agent was confidently reporting on money that no longer existed. Deletes need the same ordering guard, or a redelivered delete will wipe a row that was legitimately recreated.
+
+### Flattening
+
+The consumer doesn't write a normalized replica. It writes denormalized tables, pre-joined and shaped for reporting. This felt like a convenience at the time. It turned out to be the most important decision in either system, for reasons that show up in Part 2.
+
+---
+
+## Part 2: The reporting agent
+
+![The reporting agent pipeline: a question is embedded and matched to the nearest golden query, then SQL is generated, then a second model judges the generated query against the golden one, then Postgres executes it and returns the number. A question with no near neighbour branches off, flagged as novel and answered ungated](/diagrams/agent-pipeline.svg)
+
+First question: where does the arithmetic happen? It decides everything else.
+
+If the LLM reads rows and adds them up, you're trusting a language model to do arithmetic over a large context, which is the thing they are worst at. So we didn't. The agent writes SQL, Postgres does the math, the model never touches a number.
+
+That kills an entire category of failure. It does not kill the interesting one.
+
+### The failure that looks like success
+
+The model doesn't hallucinate the arithmetic. It hallucinates which query to write.
+
+A question about payables due this quarter comes back filtering on `created_at` instead of `due_date`. Or missing the status filter, so cancelled items are in. Or joined in a way that double counts.
+
+The SQL is valid. It runs. It returns a clean, confidently formatted, completely wrong number. There is nothing to catch, because nothing failed. It is indistinguishable from a correct answer unless you already know the answer.
+
+### Making the model's job smaller
+
+Here's where flattening pays off. `SELECT SUM(amount) FROM payables WHERE due_date BETWEEN ... AND status != 'cancelled'` gives the model very little room to be wrong. The same question against a normalized schema means reasoning about five table relationships, and every join is a fresh opportunity to double count.
+
+We moved the complexity out of the model and into the pipeline, where it's deterministic and testable. The most effective reliability work on this system wasn't prompt engineering. It was schema design.
+
+### Coverage is not correctness
+
+We keep a golden query suite, about a hundred entries, growing as people use the agent. Each one is a question plus a vetted, human-written query. New questions get embedded and compared by cosine similarity. Close to something we have, treat it as covered. Far from everything, flag it and have a human write a golden entry.
+
+This works better than it sounds. "Total payables this quarter" and "total payables last quarter" produce the same SQL with a flipped date bound, so treating them as one case is correct.
+
+Then I spent a while believing this meant more than it does.
+
+![Two separate boxes. The coverage check takes the question as input and asks whether a test exists for it. The correctness check takes the generated SQL and returned number as input and asks whether this particular run was right. The two never touch each other](/diagrams/coverage-vs-correctness.svg)
+
+Knowing a question resembles a golden query tells you your test suite has a relevant test in it. It tells you nothing about whether the SQL generated on *this run* was right. The similarity check looks at the question. It never looks at the generated query or the number that came back. A run can be marked covered and be wrong, and those two facts live in different parts of the system and never speak.
+
+### An LLM judging an LLM
+
+There's a second node. After the agent writes its query, we pull the nearest golden entry and hand both to another model to judge whether they're consistent. Failures get flagged and regenerated.
+
+It helps. It also has a specific weakness.
+
+Take the `created_at` versus `due_date` bug. That query is semantically almost identical to the correct one: same tables, same shape, same aggregate, one predicate different. A judge whose idea of "close" is semantic looks at it and sees a match, because semantically it *is* a match. The difference is business logic. It barely moves the meaning and completely changes the number.
+
+The judge fails in exactly the cases the generator failed, because they think the same way. A verification layer that's wrong precisely when you need it is not a guarantee. It's a colleague who agrees with you.
+
+### What would actually catch it
+
+![A table of four checks. The LLM judge catches drift but shares the generator's blind spots, and it is the one we have. Execute and compare, SQL lint rules, and reconciliation invariants all catch drift without sharing those blind spots, and all three are missing](/diagrams/checks-matrix.svg)
+
+The checks that work are the ones a language model can't talk its way around:
+
+**Execute and compare.** Run the generated query and the golden query, compare the values rather than the text. Only works where a true golden exists for that exact question.
+
+**Structural assertions.** Lint the SQL. A payables query must filter on status. A period query must filter on the date column that means "due," not the one that means "created." Rules, not judgment calls.
+
+**Reconciliation invariants.** Subtotals sum to totals. This period is within a sane band of last period. No negative balances where none can exist. Arithmetic the numbers have to satisfy no matter how they were fetched.
+
+Any one of these catches the bug both models miss. We have none of them. Reconciliation invariants are the thing I'd add first.
+
+### The hole I can't patch with similarity
+
+A genuinely novel question has no near neighbour. That's what makes it novel. The judge compares against the nearest golden entry, so for a novel question there's nothing meaningful to compare to. It gets answered live, then flagged, then a human writes the golden entry after the fact.
+
+Which means the first run of every new report type is ungated by design. At a growing company that isn't an edge case, it's a steady drip.
+
+---
+
+## What I'd tell someone building this
+
+Move the complexity out of the model. Every join you delete upstream is a class of error it can no longer make.
+
+Let the database do the arithmetic. Writing SQL is a much smaller ask than computing over rows.
+
+Keep coverage and correctness separate in your head. Having a test is not passing it.
+
+Treat an LLM judge as a smoke detector, not a sprinkler system. If the output is financial, put one deterministic check in the path.
+
+And assume the failures are silent. Nothing throws. Design your checks around "how would I find out," not "what would crash."
+
+The systems work and people use them every day. They're also less verified than the confidence of their output suggests.
