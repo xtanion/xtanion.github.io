@@ -1,0 +1,66 @@
+---
+title: "Patcha"
+description: "A local-first memory for your computer. It watches your browser, terminal, git and screen, keeps every byte on your machine, and hands the result to agents over MCP."
+year: "2026"
+status: "Open Source"
+tech: ["Rust", "Swift", "SQLite", "Core ML", "MCP"]
+---
+
+# Patcha
+
+Every coding agent I use starts from nothing. It gets the repo and whatever I type into the prompt, and no idea that I spent yesterday afternoon reading three GitHub issues and a Stack Overflow answer about the exact bug I'm now asking it to fix.
+
+That context exists. It's in my browser history, my shell history, my git reflog, and on my screen. It's just scattered across places nothing can query, in formats nobody designed to be queried.
+
+Patcha collects it, keeps it on my machine, and makes it searchable. From the CLI, or as an MCP tool inside Claude.
+
+[github.com/xtanion/patcha](https://github.com/xtanion/patcha)
+
+## Local-first is a constraint, not a feature
+
+"Everything stays on your machine" reads like a bullet on a landing page. In practice it's the constraint that decides every other choice, because the moment you accept one network call for convenience you've built a different product.
+
+It rules out hosted embeddings, so vectors come from [fastembed](https://github.com/Anush008/fastembed-rs) running BGE locally, no API key. It rules out a hosted vector database, so retrieval is SQLite with the [`sqlite-vec`](https://github.com/asg017/sqlite-vec) extension for approximate nearest neighbour search. It rules out sending screenshots anywhere for captioning, which is the hard one, because understanding a screenshot is exactly the kind of work you'd normally hand to somebody else's GPU.
+
+So captioning runs on-device too, through Core ML on the Apple Neural Engine. The only network calls left are optional: LLM summarization, which by default routes through your local `claude` CLI rather than any patcha service. Collection, embedding, storage and search never need a login or a connection.
+
+## The screen is mostly noise
+
+Polling the screen every sixty seconds produces an enormous amount of nearly identical data. You sit on one file for twenty minutes and that's twenty frames of the same editor with a cursor in a slightly different place. Ingest all of it and the store fills with expensive, embedded, useless duplicates.
+
+The fix is a visual prefilter: a MobileCLIP embedding of each frame, compared against the last one, and anything close enough gets dropped before it reaches the expensive part of the pipeline. That cuts redundant ingestion by somewhere between 40 and 70 percent depending on what you're doing. Reading a long document is nearly all duplicates. Bouncing between six apps is nearly none.
+
+The frames that survive get captioned rather than just OCR'd. This distinction turned out to matter more than I expected. OCR gives you the literal characters on screen, which means searching for what you were *doing* fails constantly, because "reviewing a pull request about auth" appears nowhere in the pixels. A caption describes the activity. The text you can read is only part of what was happening.
+
+## Rust wants to talk to Swift
+
+The core is Rust. The APIs it needs are not.
+
+Accessibility, Vision for OCR, and Core ML are Swift and Objective-C, and no amount of wishing makes them callable from Rust directly. So the daemon shells out to small Swift helper binaries, one per job: Accessibility tree, OCR, visual embedder, window observer.
+
+This is less elegant than a single process and more robust than one, which I did not expect. A Swift helper that hangs on a permissions prompt or dies on a weird window is one dead subprocess, not a dead daemon. The IPC boundary I resented while writing it turned into a fault boundary I now rely on.
+
+## Raw events are worthless after a day
+
+An activity log grows without bound, and individual events age badly. That I ran `cargo test` at 14:32 is meaningless a week later.
+
+So compaction runs nightly, folding raw events into structured tasks and pruning what it consumed. "Debugged the sqlite-vec migration" survives. The four hundred events underneath it do not. There's also a knowledge graph alongside the vectors, because some questions are structural rather than semantic, and "what else did I touch during this session" is a graph traversal, not a similarity search.
+
+## Handing it to an agent
+
+The whole thing exists to be queried by something else, so `patcha mcp` exposes retrieval as six read-only tools: working memory, recent activity, semantic search, activity context, session lookup, and connected-item traversal.
+
+Read-only is deliberate. An agent that can rewrite your history is a worse idea than an agent with no history at all.
+
+```bash
+patcha daemon                    # background collector
+patcha search "sqlite-vec setup" # semantic search
+patcha summarize                 # what did I do today
+patcha mcp --stdio               # expose to Claude
+```
+
+## What it costs you
+
+macOS only, and it needs Accessibility and Screen Recording permissions. There is no way around this and I'd rather say it plainly than bury it: you are granting a program the ability to watch your screen and read your windows. The entire design argument is that it never leaves your machine, which is checkable, because the source is right there and so is Little Snitch.
+
+It's also still being built. The collectors and retrieval are solid, compaction is newer, and the menu bar app exists so the daemon isn't a terminal you're scared to close.
